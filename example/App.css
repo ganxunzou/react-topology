@@ -1,0 +1,20 @@
+*{margin: 0;padding: 0}
+.container{
+    /* style={{width: '900px', margin: 'auto', textAlign: 'center'}}
+    wi */
+    width: 900px;
+    margin: auto;
+    text-align: center;
+    padding-top: 10px;
+}
+.container h1{
+    padding: 30px;
+}
+
+.customClass{
+    fill: red;
+}
+.customShowCircle{
+    stroke: green !important ;
+    fill: red !important ;
+}
