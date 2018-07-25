@@ -1,18 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
-
-const extractLESS = new ExtractTextPlugin('[name].css');
-
 
 const config = {
   entry: [
     'webpack-hot-middleware/client?reload=true',
     'react-hot-loader/patch',
     'webpack/hot/only-dev-server',
-    './example/index.jsx',
+    './src/index.jsx',
 
   ],
   devtool: 'eval-source-map',
@@ -38,15 +34,21 @@ const config = {
       { test: /\.(js|jsx)$/, use: 'babel-loader', exclude: /node_modules/ },
       {
         test: /\.css$/i,
-        use: extractLESS.extract({
-          use: [{
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]',
-            },
-          }],
-        }),
+        use: [{
+          loader: 'css-loader',
+          options: {
+            modules: true,
+            localIdentName: '[name]__[local]--[hash:base64:5]',
+          },
+        }],
+      },
+      {
+        test: /\.less$/i,
+        use: [
+          { loader: 'style-loader', options: { modules: true, localIdentName: '[name]__[local]--[hash:base64:5]'}},
+          { loader: 'css-loader'},
+          { loader: 'less-loader', options: { javascriptEnabled: true}}
+        ],
       },
       { test: /\.(eot|woff|woff2|svg|ttf|png|jpg|jpeg)$/,
         use: [
@@ -66,10 +68,6 @@ const config = {
   },
 
   plugins: [
-    // new webpack.DefinePlugin({
-    //   'process.env.NODE_ENV': JSON.stringify('development'),
-    // }),
-    // new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -78,7 +76,6 @@ const config = {
       // chunks: ['app'], //指定要加入的entry实例,
       inject: 'body',
     }),
-    extractLESS,
     new OpenBrowserPlugin({url: 'http://localhost:3000/'})
   ],
 };
