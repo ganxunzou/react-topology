@@ -10,3 +10,9 @@ export const LineType ={
 	Polyline1: "l2",  // 一级折线
 	Polyline2: "l3",  // 一级折线
 }
+
+// 选中类型
+export const SelType ={
+	SHAPE: "1", // 图形
+	LINE: "2"   // 线条
+}

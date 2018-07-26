@@ -5,16 +5,10 @@ const SubMenu = Menu.SubMenu;
 const Panel = Collapse.Panel;
 
 import MainContent from './MainContent';
-import {ShapeType, LineType} from './constant';
-
-// 选中类型
-const SelType ={
-	SHAPE: "1", // 图形
-	LINE: "2"   // 线条
-}
+import {ShapeType, LineType, SelType} from './constant';
 
 import style from "./App.less";
-console.log('style', style, style.container)
+
 
 export default class App extends React.Component {
 	constructor(props){
@@ -26,8 +20,8 @@ export default class App extends React.Component {
 		}
 	}
 
-	getSelLockNode=(key, selTypea)=>{
-		let {selKey, isLock, selType} = this.state;
+	getSelLockNode=(key)=>{
+		let {selKey, isLock} = this.state;
 		if(selKey == key) {
 			return isLock ? <Icon type="lock" /> : <Icon type="unlock" />;
 		}
@@ -50,12 +44,12 @@ export default class App extends React.Component {
 
 
 	render() {
-		let {selKey, isLock} = this.state;
+		let {selKey, isLock, selType} = this.state;
 		return (
 			<Layout>
 				<Header>
-					<div className={style.container} >
-						HHh
+					<div className={style.logo}>
+						SVG Topology
 					</div>
 					<Menu
 						theme="dark"
@@ -86,10 +80,10 @@ export default class App extends React.Component {
 									</span>
 								}
 							>
-								<Menu.Item key={ShapeType.Diamond}> 菱形 {this.getSelLockNode(ShapeType.Diamond, SelType.SHAPE)}</Menu.Item>
-								<Menu.Item key={ShapeType.Rect}> 矩形 {this.getSelLockNode(ShapeType.Rect, SelType.SHAPE)}</Menu.Item>
-								<Menu.Item key={ShapeType.Ellipse}> 椭圆 {this.getSelLockNode(ShapeType.Ellipse, SelType.SHAPE)}</Menu.Item>
-								<Menu.Item key={ShapeType.Triangle}> 三角形 {this.getSelLockNode(ShapeType.Triangle, SelType.SHAPE)}</Menu.Item>
+								<Menu.Item key={ShapeType.Diamond}> 菱形 {this.getSelLockNode(ShapeType.Diamond)}</Menu.Item>
+								<Menu.Item key={ShapeType.Rect}> 矩形 {this.getSelLockNode(ShapeType.Rect)}</Menu.Item>
+								<Menu.Item key={ShapeType.Ellipse}> 椭圆 {this.getSelLockNode(ShapeType.Ellipse)}</Menu.Item>
+								<Menu.Item key={ShapeType.Triangle}> 三角形 {this.getSelLockNode(ShapeType.Triangle)}</Menu.Item>
 							</SubMenu>
 							<SubMenu
 								key={SelType.LINE}
@@ -99,9 +93,9 @@ export default class App extends React.Component {
 									</span>
 								}
 							>
-								<Menu.Item key={LineType.Straight}> 直线 {this.getSelLockNode(LineType.Straight, SelType.LINE)}</Menu.Item>
-								<Menu.Item key={LineType.Polyline1}> 一级折线 {this.getSelLockNode(LineType.Polyline1, SelType.LINE)}</Menu.Item>
-								<Menu.Item key={LineType.Polyline2}> 二级折现 {this.getSelLockNode(LineType.Polyline2, SelType.LINE)}</Menu.Item>
+								<Menu.Item key={LineType.Straight}> 直线 {this.getSelLockNode(LineType.Straight)}</Menu.Item>
+								<Menu.Item key={LineType.Polyline1}> 一级折线 {this.getSelLockNode(LineType.Polyline1)}</Menu.Item>
+								<Menu.Item key={LineType.Polyline2}> 二级折现 {this.getSelLockNode(LineType.Polyline2)}</Menu.Item>
 							</SubMenu>
 						</Menu>
 					</Sider>
@@ -113,6 +107,7 @@ export default class App extends React.Component {
 						</Breadcrumb>
 						<MainContent
 							selKey={selKey}
+							selType={selType}
 							isLock={isLock}
 						>
 						</MainContent>

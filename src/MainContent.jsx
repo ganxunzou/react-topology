@@ -1,99 +1,153 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import uuidv1 from 'uuid/v1';
-import { Layout,} from "antd";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import uuidv1 from "uuid/v1";
+import { Layout } from "antd";
 const { Content } = Layout;
 
-import {ShapeType} from './constant';
-//import Style from './MainContent.css';
-
-//console.log('>>', Style, Style.mainContainer)
-
-import {DiamondSvg, EllipseSvg , RectSvg, TriangleSvg} from 'react-resize-svg';
-import PolylineSvg from './components/PolylineSvg';
+import { ShapeType, LineType, SelType } from "./constant";
+import { DiamondSvg, EllipseSvg, RectSvg, TriangleSvg } from "react-resize-svg";
+import PolylineSvg from "./components/PolylineSvg";
 
 class MainContent extends Component {
-  constructor(props){
-    super();
-    this.state={
-      shapes: [],
-      lines: []
-    }
-  }
+	constructor(props) {
+		super();
+		this.state = {
+			shapes: [],
+			line: undefined
+		};
+	}
 
-  createShape=(key, top , left)=>{
-    let {shapes} = this.state;
-    console.log('key', key);
-    switch (key) {
-      case ShapeType.Rect:
-        shapes.push(<RectSvg key={uuidv1()} width="100" height="100" top={top} left={left} style={{ fill: "red" }} />);
-        break;
-      
-      case ShapeType.Diamond:
-        shapes.push(<DiamondSvg key={uuidv1()} width="100" height="100" top={top} left={left} style={{ fill: "red" }} />);
-        break;
-      
-      
-      case ShapeType.Ellipse:
-        shapes.push(<EllipseSvg key={uuidv1()} width="100" height="100" top={top} left={left} style={{ fill: "red" }} />);
-        break;
+	createShape = (selType, selKey, top, left) => {
+		if(selType == SelType.SHAPE){
+			this.dealShape(selKey, top, left)
+		} else if(selType == SelType.LINE){
 
-      case ShapeType.Triangle:
-        shapes.push(<TriangleSvg key={uuidv1()} width="100" height="100" top={top} left={left} style={{ fill: "red" }} />);
-        break;
+		}
+	};
 
-      default:
-        break;
-    }
+	dealShape=(selKey, top, left)=>{
+		let { shapes } = this.state;
+		switch (selKey) {
+			case ShapeType.Rect:
+				shapes.push(
+					<RectSvg
+						key={uuidv1()}
+						width="100"
+						height="100"
+						top={top}
+						left={left}
+						style={{ fill: "red" }}
+					/>
+				);
+				break;
 
-    this.setState({shapes})
-  }
+			case ShapeType.Diamond:
+				shapes.push(
+					<DiamondSvg
+						key={uuidv1()}
+						width="100"
+						height="100"
+						top={top}
+						left={left}
+						style={{ fill: "red" }}
+					/>
+				);
+				break;
 
-  mainClickHandler=(e)=>{
-    if(e.target != ReactDOM.findDOMNode(this.refs.mainContent))
-      return;
+			case ShapeType.Ellipse:
+				shapes.push(
+					<EllipseSvg
+						key={uuidv1()}
+						width="100"
+						height="100"
+						top={top}
+						left={left}
+						style={{ fill: "red" }}
+					/>
+				);
+				break;
 
-    console.log(e.nativeEvent.offsetY, e.nativeEvent.offsetX);
-    let {selKey, isLock} = this.props;
-    isLock && this.createShape(selKey,e.nativeEvent.offsetY, e.nativeEvent.offsetX);
-  }
+			case ShapeType.Triangle:
+				shapes.push(
+					<TriangleSvg
+						key={uuidv1()}
+						width="100"
+						height="100"
+						top={top}
+						left={left}
+						style={{ fill: "red" }}
+					/>
+				);
+				break;
+		}
 
-  renderShape=()=>{
-    let {shapes} = this.state;
-    shapes.map((item)=>{
+		this.setState({ shapes });
+	}
 
-    })
-  }
-  mainMouseDownHandler=(e)=>{
-    if(e.target != ReactDOM.findDOMNode(this.refs.mainContent))
-      return;
+	mainClickHandler = e => {
+		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) return;
 
-//     let {lines} = this.state;
-// //e.nativeEvent.offsetY, e.nativeEvent.offsetX
-//      this.psvg = <PolylineSvg startPt={`${e.nativeEvent.offsetX},${e.nativeEvent.offsetY}`} />
-//      lines.push(psvg);
-//      this.setState({lines});
+		let { selKey, isLock, selType } = this.props;
+		isLock &&
+			this.createShape(
+				selType,
+				selKey,
+				e.nativeEvent.offsetY,
+				e.nativeEvent.offsetX
+			);
+	};
 
-  }
-  mainMouseMoveHandler=(e)=>{
-    // this.psvg.endPt = "10,10";
+	mainMouseDownHandler = e => {
+		if(e.target != ReactDOM.findDOMNode(this.refs.mainContent))
+		  return;
 
-  }
+		// let { line } = this.state;
+		// if (line != null) return;
 
-  render() {
-    let {shapes, lines} = this.state;
-    
-    return (
-      <Content ref="mainContent" 
-        onClick={this.mainClickHandler} 
-        onMouseDown={this.mainMouseDownHandler}
-        onMouseMove={this.mainMouseMoveHandler}
-        style={{background:'#fff', position: 'relative'}} >
-        {shapes}
-       
-      </Content>
-    );
-  }
+		// line = (
+		// 	<PolylineSvg
+		// 		startPt={`${e.nativeEvent.offsetX},${e.nativeEvent.offsetY}`}
+		// 		endPt={`${e.nativeEvent.offsetX},${e.nativeEvent.offsetY}`}
+		// 		key={uuidv1()}
+		// 	/>
+		// );
+
+		// this.setState({ line });
+  };
+  
+	mainMouseMoveHandler = e => {
+		let {line} = this.state;
+		if(line){
+		  if(React.isValidElement(line)) {
+		    console.log('object');
+		    let newLine = React.cloneElement(line, {
+		      endPt: `${e.nativeEvent.offsetX},${e.nativeEvent.offsetY}`
+		    })
+		    this.setState({line: newLine});
+		  }
+		};
+	};
+
+	render() {
+		let { shapes, line } = this.state;
+
+		let nodes = shapes.map((item)=>(item));
+		nodes.push(line);
+		
+		return (
+			<Content
+				ref="mainContent"
+				onClick={this.mainClickHandler}
+				onMouseDown={this.mainMouseDownHandler}
+				onMouseMove={this.mainMouseMoveHandler}
+				style={{ background: "#fff", position: "relative" }}
+			>
+			{nodes}
+				{/* <div style={{ position: "absolute", width:'100%' ,height:"100%" }}>{shapes}</div>
+				<div style={{ position: "absolute", width:'100%' ,height:"100%" }}>{line}</div> */}
+			</Content>
+		);
+	}
 }
 
 export default MainContent;
