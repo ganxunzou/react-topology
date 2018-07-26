@@ -55,8 +55,9 @@ const config = {
 				]
 			},
 			{
+				// 只针对antd生效。exclude： 排除src，等于只针对node_modules
 				test: /\.css$/i,
-				exclude: [/src/],
+				exclude: [/src/], 
 				use: [
 					{
 						loader: "style-loader"
