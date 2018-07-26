@@ -45,7 +45,7 @@ const config = {
       {
         test: /\.less$/i,
         use: [
-          { loader: 'style-loader', options: { modules: true, localIdentName: '[name]__[local]--[hash:base64:5]'}},
+          { loader: 'style-loader'},
           { loader: 'css-loader'},
           { loader: 'less-loader', options: { javascriptEnabled: true}}
         ],

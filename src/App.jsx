@@ -1,24 +1,54 @@
 import React from "react";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
-
+import { Layout, Menu, Breadcrumb, Icon, Collapse } from "antd";
 const { Header, Content, Footer, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
+const Panel = Collapse.Panel;
+
+import MainContent from './MainContent';
+import {GraphicsType} from './constant';
+
+
+import style from "./App.css";
+console.log('style', style, style.container)
 
 export default class App extends React.Component {
-	state = {
-		collapsed: false
-	};
+	constructor(props){
+		super();
+		this.state={
+			selKey: GraphicsType.Diamond,
+			isLock: false
+		}
+	}
 
-	onCollapse = collapsed => {
-		console.log(collapsed);
-		this.setState({ collapsed });
-	};
+	getSelLockNode=(key)=>{
+		let {selKey, isLock} = this.state;
+		if(selKey == key) {
+			return isLock ? <Icon type="lock" /> : <Icon type="unlock" />;
+		}
+		else {
+			return undefined;
+		}
+	}
+	
+	menuClickHandler=( {item, key, keyPath })=>{
+		let {selKey, isLock} = this.state;
+		if(key == selKey){
+			this.setState({selKey: key, isLock: !isLock})
+		}
+		else{
+			this.setState({selKey: key, isLock: false});
+		}
+	}
+
 
 	render() {
+		let {selKey, isLock} = this.state;
 		return (
 			<Layout>
-				<Header className="header">
-					<div className="logo" />
+				<Header>
+					<div className={style.container} >
+						HHh
+					</div>
 					<Menu
 						theme="dark"
 						mode="horizontal"
@@ -38,45 +68,20 @@ export default class App extends React.Component {
 							defaultSelectedKeys={["1"]}
 							defaultOpenKeys={["sub1"]}
 							style={{ height: "100%", borderRight: 0 }}
+							onClick={this.menuClickHandler}
 						>
 							<SubMenu
 								key="sub1"
 								title={
 									<span>
-										<Icon type="user" />subnav 1
+										<Icon type="appstore-o" />基本图形
 									</span>
 								}
 							>
-								<Menu.Item key="1">option1</Menu.Item>
-								<Menu.Item key="2">option2</Menu.Item>
-								<Menu.Item key="3">option3</Menu.Item>
-								<Menu.Item key="4">option4</Menu.Item>
-							</SubMenu>
-							<SubMenu
-								key="sub2"
-								title={
-									<span>
-										<Icon type="laptop" />subnav 2
-									</span>
-								}
-							>
-								<Menu.Item key="5">option5</Menu.Item>
-								<Menu.Item key="6">option6</Menu.Item>
-								<Menu.Item key="7">option7</Menu.Item>
-								<Menu.Item key="8">option8</Menu.Item>
-							</SubMenu>
-							<SubMenu
-								key="sub3"
-								title={
-									<span>
-										<Icon type="notification" />subnav 3
-									</span>
-								}
-							>
-								<Menu.Item key="9">option9</Menu.Item>
-								<Menu.Item key="10">option10</Menu.Item>
-								<Menu.Item key="11">option11</Menu.Item>
-								<Menu.Item key="12">option12</Menu.Item>
+								<Menu.Item key={GraphicsType.Diamond}> 菱形 {this.getSelLockNode(GraphicsType.Diamond)}</Menu.Item>
+								<Menu.Item key={GraphicsType.Rect}> 矩形 {this.getSelLockNode(GraphicsType.Rect)}</Menu.Item>
+								<Menu.Item key={GraphicsType.Ellipse}> 椭圆 {this.getSelLockNode(GraphicsType.Ellipse)}</Menu.Item>
+								<Menu.Item key={GraphicsType.Triangle}> 三角形 {this.getSelLockNode(GraphicsType.Triangle)}</Menu.Item>
 							</SubMenu>
 						</Menu>
 					</Sider>
@@ -86,17 +91,19 @@ export default class App extends React.Component {
 							<Breadcrumb.Item>List</Breadcrumb.Item>
 							<Breadcrumb.Item>App</Breadcrumb.Item>
 						</Breadcrumb>
-						<Content
-							style={{
-								background: "#fff",
-								padding: 24,
-								margin: 0,
-								minHeight: 280
-							}}
+						<MainContent
+							selKey={selKey}
+							isLock={isLock}
 						>
-							Content
-						</Content>
+						</MainContent>
 					</Layout>
+					<Sider width={200} style={{ background: "#fff" }}>
+						<Collapse defaultActiveKey={['1']} style={{height: '100%', borderRadius: 0}}>
+							<Panel header="属性" key="1" style={{height: '100%'}}>
+								<p>HelloWorld</p>
+							</Panel>
+						</Collapse>
+					</Sider>
 				</Layout>
 			</Layout>
 		);
