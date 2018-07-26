@@ -2,7 +2,7 @@
     "name": "react-resize-svg",
     "version": "1.0.3",
     "description": "",
-    "theme":"./theme.js",
+    "theme": "./theme.js",
     "scripts": {
         "start": "node server.js",
         "lint": "eslint --ext .js, .jsx src",
@@ -22,6 +22,7 @@
         "url": "https://github.com/ganxunzou/react-resize-svg"
     },
     "devDependencies": {
+        "autoprefixer": "^9.0.1",
         "babel-core": "^6.26.0",
         "babel-eslint": "^8.0.1",
         "babel-loader": "^7.1.2",
@@ -52,6 +53,7 @@
         "less": "^2.7.3",
         "less-loader": "^4.0.5",
         "open-browser-webpack-plugin": "0.0.5",
+        "postcss-loader": "^2.1.6",
         "react-hot-loader": "^3.1.1",
         "style-loader": "^0.19.0",
         "uglifyjs-webpack-plugin": "^1.0.1",

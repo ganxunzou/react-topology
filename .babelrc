@@ -7,6 +7,6 @@
   "plugins": [
     "react-hot-loader/babel",
     "syntax-dynamic-import",
-    ["import", { "libraryName": "antd", "style": true }]
+    ["import", { "libraryName": "antd", "style": "css" }]
   ]
 }
