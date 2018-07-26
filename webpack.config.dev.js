@@ -36,41 +36,39 @@ const config = {
 				exclude: /node_modules/
 			},
 			{
-				test: /\.css$/i,
-				exclude: [/node_modules/],
+				test: /\.less$/,
+				include: [/src/],
 				use: [
-					{
-						loader: "style-loader"
-					},
-					{
-						loader: "css-loader",
-						options: {
-							modules: true,
-							localIdentName: "[name]__[local]--[hash:base64:5]"
-						}
-					},
-					{
-						loader: "postcss-loader"
-					}
-				]
+						require.resolve('style-loader'),
+						{
+								loader: require.resolve('css-loader'),
+								options: {
+										modules: true,
+										localIndexName:"[name]__[local]___[hash:base64:5]"
+								},
+						},
+						{
+								loader: require.resolve('less-loader'), // compiles Less to CSS
+						},
+				],
 			},
 			{
-				// 只针对antd生效。exclude： 排除src，等于只针对node_modules
-				test: /\.css$/i,
-				exclude: [/src/], 
+				test: /\.less$/,
+				exclude: [/src/],
 				use: [
-					{
-						loader: "style-loader"
-					},
-					{
-						loader: "css-loader",
-						options: {
-							importLoaders: 1
-							// modules: true,
-							// localIdentName: "[name]__[local]--[hash:base64:5]"
-						}
-					}
-				]
+						require.resolve('style-loader'),
+						{
+								loader: require.resolve('css-loader'),
+								options: {
+									importLoaders: 1
+										// modules: true,
+										// localIndexName:"[name]__[local]___[hash:base64:5]"
+								},
+						},
+						{
+								loader: require.resolve('less-loader'), // compiles Less to CSS
+						},
+				],
 			},
 			{
 				test: /\.(eot|woff|woff2|svg|ttf|png|jpg|jpeg)$/,

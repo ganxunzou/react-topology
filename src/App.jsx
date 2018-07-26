@@ -8,7 +8,7 @@ import MainContent from './MainContent';
 import {GraphicsType} from './constant';
 
 
-import style from "./App.css";
+import style from "./App.less";
 console.log('style', style, style.container)
 
 export default class App extends React.Component {

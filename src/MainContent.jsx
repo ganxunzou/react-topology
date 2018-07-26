@@ -5,9 +5,9 @@ import { Layout,} from "antd";
 const { Content } = Layout;
 
 import {GraphicsType} from './constant';
-import Style from './MainContent.css';
+//import Style from './MainContent.css';
 
-console.log('>>', Style, Style.mainContainer)
+//console.log('>>', Style, Style.mainContainer)
 
 import {DiamondSvg, EllipseSvg , RectSvg, TriangleSvg} from 'react-resize-svg';
 
