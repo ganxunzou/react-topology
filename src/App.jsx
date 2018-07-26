@@ -5,8 +5,13 @@ const SubMenu = Menu.SubMenu;
 const Panel = Collapse.Panel;
 
 import MainContent from './MainContent';
-import {GraphicsType} from './constant';
+import {ShapeType, LineType} from './constant';
 
+// 选中类型
+const SelType ={
+	SHAPE: "1", // 图形
+	LINE: "2"   // 线条
+}
 
 import style from "./App.less";
 console.log('style', style, style.container)
@@ -15,13 +20,14 @@ export default class App extends React.Component {
 	constructor(props){
 		super();
 		this.state={
-			selKey: GraphicsType.Diamond,
+			selType: SelType.SHAPE, 
+			selKey: ShapeType.Diamond,
 			isLock: false
 		}
 	}
 
-	getSelLockNode=(key)=>{
-		let {selKey, isLock} = this.state;
+	getSelLockNode=(key, selTypea)=>{
+		let {selKey, isLock, selType} = this.state;
 		if(selKey == key) {
 			return isLock ? <Icon type="lock" /> : <Icon type="unlock" />;
 		}
@@ -31,12 +37,14 @@ export default class App extends React.Component {
 	}
 	
 	menuClickHandler=( {item, key, keyPath })=>{
+		
+		let selType = keyPath[1];
 		let {selKey, isLock} = this.state;
 		if(key == selKey){
-			this.setState({selKey: key, isLock: !isLock})
+			this.setState({selKey: key, isLock: !isLock, selType})
 		}
 		else{
-			this.setState({selKey: key, isLock: false});
+			this.setState({selKey: key, isLock: false, selType});
 		}
 	}
 
@@ -65,23 +73,35 @@ export default class App extends React.Component {
 						<Menu theme="dark"
 							mode="inline"
 							inlineCollapsed={true}
-							defaultSelectedKeys={["1"]}
-							defaultOpenKeys={["sub1"]}
+							defaultSelectedKeys={[ShapeType.Diamond]}
+							defaultOpenKeys={[SelType.SHAPE, SelType.LINE]}
 							style={{ height: "100%", borderRight: 0 }}
 							onClick={this.menuClickHandler}
 						>
 							<SubMenu
-								key="sub1"
+								key={SelType.SHAPE}
 								title={
 									<span>
 										<Icon type="appstore-o" />基本图形
 									</span>
 								}
 							>
-								<Menu.Item key={GraphicsType.Diamond}> 菱形 {this.getSelLockNode(GraphicsType.Diamond)}</Menu.Item>
-								<Menu.Item key={GraphicsType.Rect}> 矩形 {this.getSelLockNode(GraphicsType.Rect)}</Menu.Item>
-								<Menu.Item key={GraphicsType.Ellipse}> 椭圆 {this.getSelLockNode(GraphicsType.Ellipse)}</Menu.Item>
-								<Menu.Item key={GraphicsType.Triangle}> 三角形 {this.getSelLockNode(GraphicsType.Triangle)}</Menu.Item>
+								<Menu.Item key={ShapeType.Diamond}> 菱形 {this.getSelLockNode(ShapeType.Diamond, SelType.SHAPE)}</Menu.Item>
+								<Menu.Item key={ShapeType.Rect}> 矩形 {this.getSelLockNode(ShapeType.Rect, SelType.SHAPE)}</Menu.Item>
+								<Menu.Item key={ShapeType.Ellipse}> 椭圆 {this.getSelLockNode(ShapeType.Ellipse, SelType.SHAPE)}</Menu.Item>
+								<Menu.Item key={ShapeType.Triangle}> 三角形 {this.getSelLockNode(ShapeType.Triangle, SelType.SHAPE)}</Menu.Item>
+							</SubMenu>
+							<SubMenu
+								key={SelType.LINE}
+								title={
+									<span>
+										<Icon type="appstore-o" />连线
+									</span>
+								}
+							>
+								<Menu.Item key={LineType.Straight}> 直线 {this.getSelLockNode(LineType.Straight, SelType.LINE)}</Menu.Item>
+								<Menu.Item key={LineType.Polyline1}> 一级折线 {this.getSelLockNode(LineType.Polyline1, SelType.LINE)}</Menu.Item>
+								<Menu.Item key={LineType.Polyline2}> 二级折现 {this.getSelLockNode(LineType.Polyline2, SelType.LINE)}</Menu.Item>
 							</SubMenu>
 						</Menu>
 					</Sider>

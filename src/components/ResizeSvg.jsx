@@ -37,9 +37,11 @@ class ResizeSvg extends Component {
 				h: height || 100,
 				width: `${width || 100}px`,
 				height: `${height || 100}px`
-			}
+			},
+			isAction: true
 		};
 		this.currentAction = ActionType.None;
+		this.isClickMove = false;  // 一次单击过程中是否有移动
 
 		this.lastMouseX = 0;
 		this.lastMouseY = 0;
@@ -52,6 +54,7 @@ class ResizeSvg extends Component {
 	}
 
 	mouseMoveHandler(e) {
+
 		let currMouseX = event.clientX;
 		let currMouseY = event.clientY;
 
@@ -114,6 +117,10 @@ class ResizeSvg extends Component {
 			deltaTop = deltaY;
 		}
 
+		
+		if(deltaLeft > 0 || deltaTop > 0) {
+			this.isClickMove = true;
+		}
 		this.updatePosition(deltaLeft, deltaTop);
 		this.updateSize(deltaWidth, deltaHeight);
 	}
@@ -154,9 +161,18 @@ class ResizeSvg extends Component {
 
 		this.setState({ style: newStyle });
 	}
-  
+	
+	moveRectClickHandler=()=>{
+		if(!this.isClickMove){
+			let {isAction} = this.state;
+			this.setState({isAction: !isAction});
+		}
+
+		this.isClickMove = false;
+	}
+
 	render() {
-		let { padding, style } = this.state;
+		let { padding, style, isAction } = this.state;
 		let { w, h } = style;
 		let {
 			width, 
@@ -186,7 +202,7 @@ class ResizeSvg extends Component {
 					...otherProps
 				});
 		});
-		
+
 		return (
 			<svg
 				className={classnames("resize-svg-svg-container", svgContainerStyle)}
@@ -222,7 +238,7 @@ class ResizeSvg extends Component {
 						y2={padding}
 					/>
 				</g>
-				<g id="gShowCircle" className={classnames("resize-svg-show-circle", showCircleStyle)}>
+				<g id="gShowCircle" className={classnames("resize-svg-show-circle", showCircleStyle)}  style={{display: isAction ? '':'none'}}>
 					<circle
 						cx={padding}
 						cy={padding}
@@ -245,7 +261,7 @@ class ResizeSvg extends Component {
 					/>
 				</g>
 
-				<g id="gMoveRect">
+				<g id="gMoveRect" onClick={this.moveRectClickHandler}>
 					<rect
 						x={padding}
 						y={padding}
@@ -258,7 +274,7 @@ class ResizeSvg extends Component {
 					/>
 				</g>
 
-				<g id="gActionLine">
+				<g id="gActionLine"  style={{display: isAction ? '':'none'}}>
 					<line
 						x1={padding}
 						y1={padding}
@@ -305,7 +321,7 @@ class ResizeSvg extends Component {
 					/>
 				</g>
 
-				<g id="gActionCircle" >
+				<g id="gActionCircle"  style={{display: isAction ? '':'none'}}>
 					<circle
 						cx={padding}
 						cy={padding}
