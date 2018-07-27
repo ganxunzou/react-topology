@@ -13,6 +13,7 @@ export default function injectStyle(){
     stroke-dasharray: 5,5;
     stroke-width: 1;
   }
+
   .resize-svg-show-circle{
     /* stroke="#0000FF" stroke-width="1" fill="#CCCCFF" class="topLeftDrawing"  */
     stroke: #0000ff;

@@ -2,6 +2,7 @@ import classnames from "classnames";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import injectStyle from './injectCss';
+import { SelType } from '../constant';
 
 let ActionType = {
 	None: 0,
@@ -47,6 +48,9 @@ class ResizeSvg extends Component {
 		this.lastMouseY = 0;
 		window.addEventListener("mouseup", this.mouseUpHandler.bind(this));
 		window.addEventListener("mousemove", this.mouseMoveHandler.bind(this));
+
+		
+		this.shapeVo = props.shapeVo;
 	}
 
 	mouseUpHandler(e) {
@@ -54,7 +58,7 @@ class ResizeSvg extends Component {
 	}
 
 	mouseMoveHandler(e) {
-
+		
 		let currMouseX = event.clientX;
 		let currMouseY = event.clientY;
 
@@ -133,6 +137,9 @@ class ResizeSvg extends Component {
 			left: left + deltaLeft,
 			top: top + deltaTop
 		});
+
+		this.shapeVo.x = left;
+		this.shapeVo.y = top;
 		this.setState({ style: newStyle });
 	}
 
@@ -159,6 +166,8 @@ class ResizeSvg extends Component {
 			height: `${newHeight}px`
 		});
 
+		this.shapeVo.w = newWidth;
+		this.shapeVo.h = newHeight;
 		this.setState({ style: newStyle });
 	}
 	
@@ -187,6 +196,9 @@ class ResizeSvg extends Component {
 			triggerLineStyle,
 			triggerCircleStyle,
 			triggerMoveRectStyle,
+			shapeVo,
+			selType,
+			isLock,
 			...otherProps
 		} = this.props; 
 		
@@ -203,6 +215,8 @@ class ResizeSvg extends Component {
 				});
 		});
 
+		let isDrawLine = isLock && selType == SelType.LINE;
+		
 		return (
 			<svg
 				className={classnames("resize-svg-svg-container", svgContainerStyle)}
@@ -212,7 +226,7 @@ class ResizeSvg extends Component {
 			>
 				{childrenWithProps}
 				{/* 四条显示的边框：虚线 */}
-				<g id="gShowLine" className={classnames("resize-svg-show-line", showLineStyle)}>
+				<g id="gShowLine" className={classnames("resize-svg-show-line", showLineStyle)} style={{stroke: isDrawLine ? 'green' :'' }} >
 					<line
 						x1={padding}
 						y1={padding}
@@ -238,7 +252,7 @@ class ResizeSvg extends Component {
 						y2={padding}
 					/>
 				</g>
-				<g id="gShowCircle" className={classnames("resize-svg-show-circle", showCircleStyle)}  style={{display: isAction ? '':'none'}}>
+				<g id="gShowCircle" className={classnames("resize-svg-show-circle", showCircleStyle)}  style={{display: !isDrawLine && isAction ? '':'none'}}>
 					<circle
 						cx={padding}
 						cy={padding}
@@ -261,7 +275,7 @@ class ResizeSvg extends Component {
 					/>
 				</g>
 
-				<g id="gMoveRect" onClick={this.moveRectClickHandler}>
+				<g id="gMoveRect" onClick={this.moveRectClickHandler} style={{display: isDrawLine ? 'none':''}}>
 					<rect
 						x={padding}
 						y={padding}
