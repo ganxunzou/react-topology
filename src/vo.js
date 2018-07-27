@@ -62,17 +62,17 @@ class EllipseShapeVo extends ShapeVo {
   }
 }
 
-
-
 /**
  * 线 VO
  */
-class Line extends BaseVo {
+class LineVo extends BaseVo {
   constructor(id,fromNode, toNode, lineType){
     super(id);
     this.fromNode = fromNode;
     this.toNode = toNode;
     this.lineType = lineType; 
+    this.tempToX = 0;
+    this.tempToY = 0;
   }
 }
 
@@ -83,5 +83,5 @@ export {
   DiamondShapeVo,
   TriangleShapeVo,
   EllipseShapeVo,
-  Line,
+  LineVo,
 }

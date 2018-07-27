@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import uuidv1 from "uuid/v1";
 import { Layout } from "antd";
 const { Content } = Layout;
 
@@ -11,7 +10,8 @@ import {
 	RectShapeVo,
 	DiamondShapeVo,
 	TriangleShapeVo,
-	EllipseShapeVo
+	EllipseShapeVo,
+	LineVo
 } from "./vo";
 
 class MainContent extends Component {
@@ -19,16 +19,28 @@ class MainContent extends Component {
 		super();
 		this.state = {
 			shapeVos: {}, // key: uuid , value ShapeVo
-			line: undefined
+			lineVos: {}, // key: uuid ,value lineVo
+			tempLineVo: null
 		};
 	}
 
+	// 根据位置获取对应的ShapeVo
+	getShapeVoByArea=(x, y)=>{
+		let {shapeVos} = this.state;
+		let retVo = null;
+		for(let key in shapeVos){
+			let shapeVo = shapeVos[key];
+			//console.log(x > shapeVo.x , x< (shapeVo.x + shapeVo.width) , y > shapeVo.y , y < shapeVo.y + shapeVo.height);
+			if(x > shapeVo.x && x< (shapeVo.x + shapeVo.w) && y > shapeVo.y && y < shapeVo.y + shapeVo.h ) {
+				retVo = shapeVo;
+				break;
+			}
+		}
+		return retVo;
+	}
+
 	mainClickHandler = e => {
-		console.log(e.target);
-		console.log(e.nativeEvent);
-
 		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) return;
-
 
 		let { selKey, isLock, selType } = this.props;
 		isLock &&
@@ -41,18 +53,62 @@ class MainContent extends Component {
 	};
 
 	mainMouseDownHandler = e => {
-		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) return;
+		
+		let id = e.target.id;
+		let { shapeVos, tempLineVo } = this.state;
+		let { isLock, selType } = this.props;
+
+		if (selType == SelType.LINE && isLock) {
+			// 鼠标在图形上 && 图形已经注册
+
+			if (
+				e.target.className.baseVal == "resize-svg-trigger-move-rect" &&
+				shapeVos[id] &&
+				tempLineVo == null
+			) {
+				let tempLineVo = new LineVo();
+				tempLineVo.fromNode = shapeVos[id];
+				// 绘制线
+				this.setState({ tempLineVo });
+			}
+		}
 	};
 
 	mainMouseMoveHandler = e => {
-		let { line } = this.state;
-		if (line) {
-			if (React.isValidElement(line)) {
-				let newLine = React.cloneElement(line, {
-					endPt: `${e.nativeEvent.offsetX},${e.nativeEvent.offsetY}`
-				});
-				this.setState({ line: newLine });
+		let { tempLineVo } = this.state;
+		let { isLock, selType } = this.props;
+		if (selType == SelType.LINE && isLock) {
+			if (tempLineVo) {
+				tempLineVo.tempToX = e.nativeEvent.offsetX;
+				tempLineVo.tempToY = e.nativeEvent.offsetY;
+
+				this.setState({ tempLineVo });
 			}
+		}
+	};
+
+	mainMouseUpHandler = e => {
+
+		let shapeVo = this.getShapeVoByArea(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+		console.log('>>>>', shapeVo);
+
+		let { tempLineVo } = this.state;
+		if (tempLineVo && shapeVo) {
+			tempLineVo.toNode = shapeVo;
+
+			this.createLineVo(tempLineVo);
+		}
+
+		this.setState({ tempLineVo: null });
+	};
+
+	createLineVo = lineVo => {
+		let { lineVos } = this.state;
+
+		if (lineVos && !lineVos[lineVo.id]) {
+			lineVos[lineVo.id] = lineVo;
+
+			this.setState({ lineVos });
 		}
 	};
 
@@ -94,10 +150,6 @@ class MainContent extends Component {
 		}
 	};
 
-	dealCreateLineVo = (selKey, top, left) =>{
-
-	}
-
 	renderShape = () => {
 		let nodes = [];
 		let { shapeVos } = this.state;
@@ -115,6 +167,7 @@ class MainContent extends Component {
 			case ShapeType.Rect:
 				return (
 					<RectSvg
+						id={shapeVo.id}
 						key={shapeVo.id}
 						width="100"
 						height="100"
@@ -178,8 +231,69 @@ class MainContent extends Component {
 		}
 	};
 
-	render() {
+	renderNodes = () => {
+		let nodes = [];
 		let shapeNodes = this.renderShape();
+		let tempLine = this.renderTempLine();
+		let lineNodes = this.renderLine();
+
+		if (shapeNodes) {
+			nodes = nodes.concat(shapeNodes);
+		}
+
+		if (tempLine) {
+			nodes.push(tempLine);
+		}
+
+		if(lineNodes){
+			nodes.push(lineNodes);
+		}
+
+		return nodes;
+	};
+
+	renderLine = () => {
+		let nodes = [];
+		let { lineVos } = this.state;
+		for (let key in lineVos) {
+			let lineNode = this.createLineByVo(lineVos[key]);
+			lineNode && nodes.push(lineNode);
+		}
+		return nodes;
+	};
+
+	createLineByVo=(lineVo)=>{
+		let sX = lineVo.fromNode.x;
+		let sY = lineVo.fromNode.y;
+		let toX = lineVo.toNode.x;
+		let toY = lineVo.toNode.y;
+		return (
+			<PolylineSvg
+				key={lineVo.id}
+				startPt={`${sX},${sY}`}
+				endPt={`${toX},${toY}`}
+			/>
+		);
+	}
+
+	renderTempLine = () => {
+		let { tempLineVo } = this.state;
+		if (!tempLineVo || !tempLineVo.fromNode) return null;
+
+		let sX = tempLineVo.fromNode.x;
+		let sY = tempLineVo.fromNode.y;
+		//React.cloneElement(line,{startPt: `${sX},${sY}`, endPt: `${tempLineVo.tempToX},${tempLineVo.tempToY}`});
+		return (
+			<PolylineSvg
+				key={tempLineVo.id}
+				startPt={`${sX},${sY}`}
+				endPt={`${tempLineVo.tempToX},${tempLineVo.tempToY}`}
+			/>
+		);
+	};
+
+	render() {
+		let nodes = this.renderNodes();
 		// let nodes = shapes.map((item)=>(item));
 		// nodes.push(line);
 
@@ -189,9 +303,11 @@ class MainContent extends Component {
 				onClick={this.mainClickHandler}
 				onMouseDown={this.mainMouseDownHandler}
 				onMouseMove={this.mainMouseMoveHandler}
+				onMouseUp={this.mainMouseUpHandler}
 				style={{ background: "#fff", position: "relative" }}
 			>
-				{shapeNodes}
+				
+				{nodes}
 				{/* <div style={{ position: "absolute", width:'100%' ,height:"100%" }}>{shapes}</div>
 				<div style={{ position: "absolute", width:'100%' ,height:"100%" }}>{line}</div> */}
 			</Content>

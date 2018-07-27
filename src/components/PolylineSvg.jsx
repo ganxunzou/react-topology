@@ -23,7 +23,7 @@ class PolylineSvg extends Component {
 
     let pts = startPt ;
     pts += " " + endPt;
-    console.log('pts', pts);
+    //console.log('pts', pts);
     return pts;
   }
 
@@ -36,7 +36,7 @@ class PolylineSvg extends Component {
 				height="100%"
 				version="1.1"
         xmlns="http://www.w3.org/2000/svg"
-        style={{position:'absolute'}}
+        style={{position:'absolute', pointerEvent: 'none'}}
 			>
 				<polyline
           points={pts}

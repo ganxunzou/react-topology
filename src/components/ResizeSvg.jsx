@@ -199,6 +199,8 @@ class ResizeSvg extends Component {
 			shapeVo,
 			selType,
 			isLock,
+			key,
+			shapeMouseUp,
 			...otherProps
 		} = this.props; 
 		
@@ -216,7 +218,7 @@ class ResizeSvg extends Component {
 		});
 
 		let isDrawLine = isLock && selType == SelType.LINE;
-		
+		console.log('isDrawLine', isDrawLine);
 		return (
 			<svg
 				className={classnames("resize-svg-svg-container", svgContainerStyle)}
@@ -275,15 +277,16 @@ class ResizeSvg extends Component {
 					/>
 				</g>
 
-				<g id="gMoveRect" onClick={this.moveRectClickHandler} style={{display: isDrawLine ? 'none':''}}>
-					<rect
+				<g id="gMoveRect" onClick={this.moveRectClickHandler} >
+					<rect id={shapeVo.id}
 						x={padding}
 						y={padding}
 						width={`${w - padding * 2}px`}
 						height={`${h - padding * 2}px`}
 						className={classnames("resize-svg-trigger-move-rect", triggerMoveRectStyle)}
+						style={{cursor: isDrawLine ? 'default' : 'move'}}
 						onMouseDown={() => {
-							this.mouseDownHandler(ActionType.Move);
+							!isDrawLine && this.mouseDownHandler(ActionType.Move);
 						}}
 					/>
 				</g>
