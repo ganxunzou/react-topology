@@ -67,8 +67,10 @@ class ResizeSvg extends Component {
 
 		this.applyMouseMoveAction(deltaX, deltaY);
 
-		this.lastMouseX = event.pageX;
-		this.lastMouseY = event.pageY;
+		// this.lastMouseX = event.pageX;
+		// this.lastMouseY = event.pageY;
+		this.lastMouseX = currMouseX;
+		this.lastMouseY = currMouseY;
 	}
 
 	mouseDownHandler(actionType) {
@@ -125,8 +127,16 @@ class ResizeSvg extends Component {
 		if(deltaLeft > 0 || deltaTop > 0) {
 			this.isClickMove = true;
 		}
+		
+
 		this.updatePosition(deltaLeft, deltaTop);
 		this.updateSize(deltaWidth, deltaHeight);
+
+		// this.shapeVo
+		let {onSvgMouseMove} = this.props;
+		if(onSvgMouseMove){
+			onSvgMouseMove(this.shapeVo);
+		}
 	}
 
 	updatePosition(deltaLeft, deltaTop) {
@@ -200,7 +210,7 @@ class ResizeSvg extends Component {
 			selType,
 			isLock,
 			key,
-			shapeMouseUp,
+			onSvgMouseMove,
 			...otherProps
 		} = this.props; 
 		
@@ -218,7 +228,6 @@ class ResizeSvg extends Component {
 		});
 
 		let isDrawLine = isLock && selType == SelType.LINE;
-		console.log('isDrawLine', isDrawLine);
 		return (
 			<svg
 				className={classnames("resize-svg-svg-container", svgContainerStyle)}

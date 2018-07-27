@@ -36,9 +36,9 @@ class PolylineSvg extends Component {
 				height="100%"
 				version="1.1"
         xmlns="http://www.w3.org/2000/svg"
-        style={{position:'absolute', pointerEvent: 'none'}}
+        style={{position:'absolute', pointerEvents: 'none'}}
 			>
-				<polyline
+				<polyline style={{pointerEvents: 'auto'}}
           points={pts}
           style={{fill:'none', stroke:'#000', strokeWidth:2}}
 				/>

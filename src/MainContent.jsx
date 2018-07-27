@@ -75,12 +75,21 @@ class MainContent extends Component {
 	};
 
 	mainMouseMoveHandler = e => {
-		let { tempLineVo } = this.state;
+		let { tempLineVo, shapeVos } = this.state;
 		let { isLock, selType } = this.props;
 		if (selType == SelType.LINE && isLock) {
+
 			if (tempLineVo) {
-				tempLineVo.tempToX = e.nativeEvent.offsetX;
-				tempLineVo.tempToY = e.nativeEvent.offsetY;
+				let id = e.target.id;
+				if ( e.target.className.baseVal == "resize-svg-trigger-move-rect" && shapeVos[id] ){
+					tempLineVo.tempToX = shapeVos[id].x;
+					tempLineVo.tempToY = shapeVos[id].y;	
+				} 
+				else
+				{
+					tempLineVo.tempToX = e.nativeEvent.offsetX;
+					tempLineVo.tempToY = e.nativeEvent.offsetY;
+				}
 
 				this.setState({ tempLineVo });
 			}
@@ -88,17 +97,15 @@ class MainContent extends Component {
 	};
 
 	mainMouseUpHandler = e => {
-
-		let shapeVo = this.getShapeVoByArea(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-		console.log('>>>>', shapeVo);
-
-		let { tempLineVo } = this.state;
-		if (tempLineVo && shapeVo) {
-			tempLineVo.toNode = shapeVo;
-
+		// let shapeVo = this.getShapeVoByArea(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+		
+		let id = e.target.id;
+		let { tempLineVo, shapeVos } = this.state;
+		if ( tempLineVo && e.target.className.baseVal == "resize-svg-trigger-move-rect" && shapeVos[id] ){
+		
+			tempLineVo.toNode = shapeVos[id];
 			this.createLineVo(tempLineVo);
 		}
-
 		this.setState({ tempLineVo: null });
 	};
 
@@ -160,6 +167,10 @@ class MainContent extends Component {
 		return nodes;
 	};
 
+	svgMouseMoveHandler=(shapeVo)=>{
+		this.forceUpdate(); 
+	}
+
 	createShapeByVo = shapeVo => {
 		let { x, y } = shapeVo;
 		let { isLock, selType } = this.props;
@@ -177,6 +188,7 @@ class MainContent extends Component {
 						shapeVo={shapeVo}
 						isLock={isLock}
 						selType={selType}
+						onSvgMouseMove={this.svgMouseMoveHandler}
 					/>
 				);
 				break;
@@ -192,7 +204,8 @@ class MainContent extends Component {
 						style={{ fill: "red" }}
 						shapeVo={shapeVo}
 						isLock={isLock}
-						selType={selType}
+						selType={selType}						
+						onSvgMouseMove={this.svgMouseMoveHandler}
 					/>
 				);
 				break;
@@ -209,6 +222,7 @@ class MainContent extends Component {
 						shapeVo={shapeVo}
 						isLock={isLock}
 						selType={selType}
+						onSvgMouseMove={this.svgMouseMoveHandler}
 					/>
 				);
 				break;
@@ -225,6 +239,7 @@ class MainContent extends Component {
 						shapeVo={shapeVo}
 						isLock={isLock}
 						selType={selType}
+						onSvgMouseMove={this.svgMouseMoveHandler}
 					/>
 				);
 				break;
@@ -282,6 +297,12 @@ class MainContent extends Component {
 
 		let sX = tempLineVo.fromNode.x;
 		let sY = tempLineVo.fromNode.y;
+		if(tempLineVo.tempToX == 0)
+			tempLineVo.tempToX = sX;
+		
+			if(tempLineVo.tempToY == 0)
+			tempLineVo.tempToY = sY;
+			
 		//React.cloneElement(line,{startPt: `${sX},${sY}`, endPt: `${tempLineVo.tempToX},${tempLineVo.tempToY}`});
 		return (
 			<PolylineSvg
@@ -292,11 +313,28 @@ class MainContent extends Component {
 		);
 	};
 
+	calcLinePosition=(tempLineVo)=>{
+		// 以发起图形中心圆点建立坐标，4个象限
+	}
+
+	quadrantOne=()=>{
+
+	}
+
+	quadrantTwo=()=>{
+		
+	}
+
+	quadrantThree=()=>{
+		
+	}
+
+	quadrantFour=()=>{
+		
+	}
+
 	render() {
 		let nodes = this.renderNodes();
-		// let nodes = shapes.map((item)=>(item));
-		// nodes.push(line);
-
 		return (
 			<Content
 				ref="mainContent"
@@ -304,12 +342,9 @@ class MainContent extends Component {
 				onMouseDown={this.mainMouseDownHandler}
 				onMouseMove={this.mainMouseMoveHandler}
 				onMouseUp={this.mainMouseUpHandler}
-				style={{ background: "#fff", position: "relative" }}
+				style={{ background: "#fff", position: "relative", overflow:'auto' }}
 			>
-				
 				{nodes}
-				{/* <div style={{ position: "absolute", width:'100%' ,height:"100%" }}>{shapes}</div>
-				<div style={{ position: "absolute", width:'100%' ,height:"100%" }}>{line}</div> */}
 			</Content>
 		);
 	}
