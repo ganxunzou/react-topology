@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Layout, Collapse, Breadcrumb, Button } from "antd";
+import { Layout, Collapse, Breadcrumb, Button, Input } from "antd";
 const { Content, Sider } = Layout;
 const Panel = Collapse.Panel;
 const ButtonGroup = Button.Group;
@@ -19,6 +19,7 @@ import {
 } from "./vo";
 
 import style from './MainContent.less';
+import FileUtils from './utils/FileUtils';
 
 class MainContent extends Component {
 	constructor(props) {
@@ -438,6 +439,32 @@ class MainContent extends Component {
 		// console.log(shapeVo.x, shapeVo);
 		this.forceUpdate();
 	};
+
+	
+	saveDataClickHandler=()=>{
+		let {shapeVos, lineVos} = this.state;
+		let retData ={
+			shapeVos,
+			lineVos,
+		}
+
+		let content = JSON.stringify(retData);
+		var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
+		FileUtils.saveFile(blob, 'react-topology.json')
+
+	}
+
+	loadDataClickHandler=()=>{
+		FileUtils.loadJsonFile((str)=>{
+			if(str){
+				let obj = JSON.parse(str);
+
+				let {shapeVos, lineVos} = obj;
+				this.setState({shapeVos, lineVos});
+			}
+		});
+	}
+
 	render() {
 		let nodes = this.renderNodes();
 		let { selectedShapeVos } = this.state;
@@ -448,8 +475,8 @@ class MainContent extends Component {
 		return (
 			<Layout style={{ padding: "0 24px 24px" }}>
 				<ButtonGroup style={{ padding: "10px 0" }}>
-					<Button type="primary">加载数据</Button>
-					<Button type="primary">保存数据</Button>
+					<Button type="primary" onClick={this.loadDataClickHandler} >加载数据</Button>
+					<Button type="primary" onClick={this.saveDataClickHandler}>保存数据</Button>
 				</ButtonGroup>
 				<Layout>
 					<Content
