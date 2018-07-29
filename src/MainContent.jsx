@@ -152,7 +152,7 @@ class MainContent extends Component {
 	};
 
 	dealCreateShapeVo = (selKey, top, left) => {
-		let { shapeVos } = this.state;
+		let { shapeVos, selectedShapeVos } = this.state;
 
 		let shapeVo = null;
 		switch (selKey) {
@@ -178,7 +178,8 @@ class MainContent extends Component {
 			shapeVo.y = top;
 
 			shapeVos[shapeVo.id] = shapeVo;
-			this.setState({ shapeVos });
+			selectedShapeVos.push(shapeVo);
+			this.setState({ shapeVos, selectedShapeVos });
 		}
 	};
 
@@ -246,7 +247,6 @@ class MainContent extends Component {
 
 	createShapeByVo = shapeVo => {
 		let { x, y } = shapeVo;
-		console.log('createShapeByVo', x, y);
 		let { isLock, selType } = this.props;
 		switch (shapeVo.shapeType) {
 			case ShapeType.Rect:
@@ -281,6 +281,7 @@ class MainContent extends Component {
 						isLock={isLock}
 						selType={selType}
 						onSvgMouseMove={this.svgMouseMoveHandler}
+						onSvgChangeAction={this.svgChangeActionHandler}
 					/>
 				);
 				break;
@@ -298,6 +299,7 @@ class MainContent extends Component {
 						isLock={isLock}
 						selType={selType}
 						onSvgMouseMove={this.svgMouseMoveHandler}
+						onSvgChangeAction={this.svgChangeActionHandler}
 					/>
 				);
 				break;
@@ -315,6 +317,7 @@ class MainContent extends Component {
 						isLock={isLock}
 						selType={selType}
 						onSvgMouseMove={this.svgMouseMoveHandler}
+						onSvgChangeAction={this.svgChangeActionHandler}
 					/>
 				);
 				break;
