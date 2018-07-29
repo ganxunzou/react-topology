@@ -357,7 +357,7 @@ class ResizeSvg extends Component {
 					/>
 				</g>
 
-				<g id="gActionLine" style={{ display: isAction ? "" : "none" }}>
+				<g id="gActionLine" style={{ display: !isDrawLine && isAction ? "" : "none" }}>
 					<line
 						x1={padding}
 						y1={padding}
@@ -418,7 +418,7 @@ class ResizeSvg extends Component {
 
 				<g
 					id="gActionCircle"
-					style={{ display: isAction ? "" : "none" }}
+					style={{ display: !isDrawLine && isAction ? "" : "none" }}
 				>
 					<circle
 						cx={padding}
