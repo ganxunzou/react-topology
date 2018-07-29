@@ -200,8 +200,10 @@ class MainContent extends Component {
 		this.forceUpdate();
 	};
 
-	svgChangeActionHandler = (isAction, shapeVo) => {
-		let { selectedShapeVos } = this.state;
+	svgChangeActionHandler = (isAction, shapeVo, isLock) => {
+		if(isLock)
+			return;
+
 		if (isAction) {
 			//	this.setState({selectedShapeVo: shapeVo})	;
 			this.changeSelectedShapeOrder(shapeVo);

@@ -212,13 +212,17 @@ class ResizeSvg extends Component {
 			let { isAction, shapeVo } = this.state;
 			this.setState({ isAction: !isAction });
 
-			let { onSvgChangeAction } = this.props;
-
-			onSvgChangeAction && onSvgChangeAction(!isAction, shapeVo);
+			this.onSvgChangeAction(isAction, shapeVo);
 		}
 
 		this.isClickMove = false;
 	};
+
+	onSvgChangeAction=(isAction, shapeVo)=>{
+		let {isLock} = this.props;
+		let { onSvgChangeAction } = this.props;
+		onSvgChangeAction && onSvgChangeAction(!isAction, shapeVo, isLock);
+	}
 
 	render() {
 		let { padding, style, isAction, deafultSvgContainerStyle } = this.state;
