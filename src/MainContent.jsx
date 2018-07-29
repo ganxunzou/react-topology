@@ -460,9 +460,23 @@ class MainContent extends Component {
 				let obj = JSON.parse(str);
 
 				let {shapeVos, lineVos} = obj;
-				this.setState({shapeVos, lineVos});
+				let fromLineVos = this.formatLineVos(shapeVos, lineVos);
+				this.setState({shapeVos, lineVos: fromLineVos});
 			}
 		});
+	}
+
+	formatLineVos=(shapeVos, lineVos)=>{
+
+		for (const id in lineVos) {
+			let lineVo = lineVos[id];
+			lineVo.fromNode = shapeVos[lineVo.fromNode.id];
+			lineVo.toNode = shapeVos[lineVo.toNode.id];
+		}
+
+		
+
+		return lineVos;
 	}
 
 	render() {
