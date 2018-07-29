@@ -16,3 +16,13 @@ export const SelType ={
 	SHAPE: "1", // 图形
 	LINE: "2"   // 线条
 }
+
+// 象限
+export const Quadrant = {
+	One: '1',
+	Two: '2',
+	Three: '3',
+	Four: '4',
+	OneFour: '14',
+	TwoThree: '23',
+}

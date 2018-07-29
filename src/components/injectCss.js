@@ -6,8 +6,18 @@ export default function injectStyle(){
     left: 0;
     top: 0;
     position: relative;
-    position: absolute;
+    position: absolute; 
   }
+
+  .resize-svg-svg-container-dynamic{
+    left: 0;
+    top: 0;
+    position: relative;
+    position: absolute; 
+    transition: left 0.5s, top 0.5s, width 0.5s, height 0.5s;
+  }
+
+
   .resize-svg-show-line{
     stroke: red;
     stroke-dasharray: 5,5;

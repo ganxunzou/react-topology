@@ -1,8 +1,7 @@
 import React from "react";
-import { Layout, Menu, Breadcrumb, Icon, Collapse } from "antd";
-const { Header, Content, Footer, Sider } = Layout;
+import { Layout, Menu, Breadcrumb, Icon } from "antd";
+const { Header, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
-const Panel = Collapse.Panel;
 
 import MainContent from './MainContent';
 import {ShapeType, LineType, SelType} from './constant';
@@ -112,13 +111,6 @@ export default class App extends React.Component {
 						>
 						</MainContent>
 					</Layout>
-					<Sider width={200} style={{ background: "#fff" }}>
-						<Collapse defaultActiveKey={['1']} style={{height: '100%', borderRadius: 0}}>
-							<Panel header="属性" key="1" style={{height: '100%'}}>
-								<p>HelloWorld</p>
-							</Panel>
-						</Collapse>
-					</Sider>
 				</Layout>
 			</Layout>
 		);
