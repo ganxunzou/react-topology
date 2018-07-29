@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Layout, Collapse } from "antd";
+import { Layout, Collapse, Breadcrumb, Button } from "antd";
 const { Content, Sider } = Layout;
 const Panel = Collapse.Panel;
+const ButtonGroup = Button.Group;
 
 import { ShapeType, LineType, SelType, Quadrant } from "./constant";
 import { DiamondSvg, EllipseSvg, RectSvg, TriangleSvg } from "react-resize-svg";
 import PolylineSvg from "./components/PolylineSvg";
-import ShapeAtt from './components/ShapeAtt';
+import ShapeAtt from "./components/ShapeAtt";
 import {
 	RectShapeVo,
 	DiamondShapeVo,
@@ -17,6 +18,8 @@ import {
 	Point
 } from "./vo";
 
+import style from './MainContent.less';
+
 class MainContent extends Component {
 	constructor(props) {
 		super();
@@ -24,7 +27,7 @@ class MainContent extends Component {
 			shapeVos: {}, // key: uuid , value ShapeVo
 			lineVos: {}, // key: uuid ,value lineVo
 			tempLineVo: null,
-			selectedShapeVos: [],// 选中图形列表
+			selectedShapeVos: [] // 选中图形列表
 		};
 	}
 
@@ -197,53 +200,50 @@ class MainContent extends Component {
 		this.forceUpdate();
 	};
 
-	svgChangeActionHandler=(isAction, shapeVo)=>{
-		let {selectedShapeVos} = this.state;
-		if(isAction) {
-		//	this.setState({selectedShapeVo: shapeVo})	;
+	svgChangeActionHandler = (isAction, shapeVo) => {
+		let { selectedShapeVos } = this.state;
+		if (isAction) {
+			//	this.setState({selectedShapeVo: shapeVo})	;
 			this.changeSelectedShapeOrder(shapeVo);
-		}
-		else{
+		} else {
 			this.removeSelectedShape(shapeVo);
 			// this.setState({selectedShapeVo: null})
 		}
-	}
+	};
 
-	changeSelectedShapeOrder=(shapeVo)=>{
-		let {selectedShapeVos} = this.state;
+	changeSelectedShapeOrder = shapeVo => {
+		let { selectedShapeVos } = this.state;
 		let removeIndex = -1;
 		for (let i = 0; i < selectedShapeVos.length; i++) {
-			if(shapeVo.id == selectedShapeVos[i].id){
+			if (shapeVo.id == selectedShapeVos[i].id) {
 				// 删除
 				removeIndex = i;
 			}
 		}
-		if(removeIndex != -1) {
-			selectedShapeVos.splice(removeIndex,1);
+		if (removeIndex != -1) {
+			selectedShapeVos.splice(removeIndex, 1);
 		}
 
 		selectedShapeVos.push(shapeVo);
-		this.setState({selectedShapeVos});
-	}
+		this.setState({ selectedShapeVos });
+	};
 
-	removeSelectedShape=(shapeVo)=>{
-		let {selectedShapeVos} = this.state;
+	removeSelectedShape = shapeVo => {
+		let { selectedShapeVos } = this.state;
 		let removeIndex = -1;
 		for (let i = 0; i < selectedShapeVos.length; i++) {
-			if(shapeVo.id == selectedShapeVos[i].id){
+			if (shapeVo.id == selectedShapeVos[i].id) {
 				// 删除
 				removeIndex = i;
 			}
 		}
-		if(removeIndex != -1) {
-			selectedShapeVos.splice(removeIndex,1);
+		if (removeIndex != -1) {
+			selectedShapeVos.splice(removeIndex, 1);
 		}
-		this.setState({selectedShapeVos});
-	}
+		this.setState({ selectedShapeVos });
+	};
 
-	renderSelectedShapeAttribute=()=>{
-
-	}
+	renderSelectedShapeAttribute = () => {};
 
 	createShapeByVo = shapeVo => {
 		let { x, y } = shapeVo;
@@ -427,7 +427,7 @@ class MainContent extends Component {
 		}
 	};
 
-	shapeAttChangeHandler=(shapeVo)=>{
+	shapeAttChangeHandler = shapeVo => {
 		// console.log('shapeVo>>>>', shapeVo.x);
 		// let {shapeVos} = this.state;
 		// // shapeVos[shapeVo.id] =shapeVo;
@@ -435,37 +435,55 @@ class MainContent extends Component {
 		// this.setState({shapeVos})
 		// console.log(shapeVo.x, shapeVo);
 		this.forceUpdate();
-	}
+	};
 	render() {
 		let nodes = this.renderNodes();
-		let {selectedShapeVos} = this.state;
-		let selectedShapeVo = selectedShapeVos.length > 0 && selectedShapeVos[selectedShapeVos.length-1];
+		let { selectedShapeVos } = this.state;
+		let selectedShapeVo =
+			selectedShapeVos.length > 0 &&
+			selectedShapeVos[selectedShapeVos.length - 1];
+
 		return (
-			<Layout>
-				<Content
-					ref="mainContent"
-					onClick={this.mainClickHandler}
-					onMouseDown={this.mainMouseDownHandler}
-					onMouseMove={this.mainMouseMoveHandler}
-					onMouseUp={this.mainMouseUpHandler}
-					style={{
-						background: "#fff",
-						position: "relative",
-						overflow: "auto"
-					}}
-				>
-					{nodes}
-				</Content>
-				<Sider width={200} style={{ background: "#fff" }}>
-					<Collapse
-						defaultActiveKey={["1"]}
-						style={{ height: "100%", borderRadius: 0 }}
+			<Layout style={{ padding: "0 24px 24px" }}>
+				<ButtonGroup style={{ padding: "10px 0" }}>
+					<Button type="primary">加载数据</Button>
+					<Button type="primary">保存数据</Button>
+				</ButtonGroup>
+				<Layout>
+					<Content
+						ref="mainContent"
+						onClick={this.mainClickHandler}
+						onMouseDown={this.mainMouseDownHandler}
+						onMouseMove={this.mainMouseMoveHandler}
+						onMouseUp={this.mainMouseUpHandler}
+						style={{
+							background: "#fff",
+							position: "relative",
+							overflow: "auto"
+						}}
 					>
-						<Panel header="属性" key="1" style={{ height: "100%" }}>
-							<ShapeAtt shapeVo={selectedShapeVo} onShapeAttChange={this.shapeAttChangeHandler}/>
-						</Panel>
-					</Collapse>
-				</Sider>
+						{nodes}
+					</Content>
+					<Sider width={200} theme="dark">
+						<Collapse 
+							defaultActiveKey={["1"]}
+							style={{ height: "100%", borderRadius: 0 }}
+						>
+							<Panel
+								header="属性"
+								key="1"
+								style={{ height: "100%"}}
+							>
+								<ShapeAtt
+									shapeVo={selectedShapeVo}
+									onShapeAttChange={
+										this.shapeAttChangeHandler
+									}
+								/>
+							</Panel>
+						</Collapse>
+					</Sider>
+				</Layout>
 			</Layout>
 		);
 	}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
+import { Layout, Menu, Icon } from "antd";
 const { Header, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 
@@ -7,7 +7,6 @@ import MainContent from './MainContent';
 import {ShapeType, LineType, SelType} from './constant';
 
 import style from "./App.less";
-
 
 export default class App extends React.Component {
 	constructor(props){
@@ -98,19 +97,12 @@ export default class App extends React.Component {
 							</SubMenu>
 						</Menu>
 					</Sider>
-					<Layout style={{ padding: "0 24px 24px" }}>
-						<Breadcrumb style={{ margin: "16px 0" }}>
-							<Breadcrumb.Item>Home</Breadcrumb.Item>
-							<Breadcrumb.Item>List</Breadcrumb.Item>
-							<Breadcrumb.Item>App</Breadcrumb.Item>
-						</Breadcrumb>
-						<MainContent
+					<MainContent
 							selKey={selKey}
 							selType={selType}
 							isLock={isLock}
 						>
 						</MainContent>
-					</Layout>
 				</Layout>
 			</Layout>
 		);

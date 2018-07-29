@@ -56,9 +56,8 @@ class ResizeSvg extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		let {shapeVo} = this.state;
 		if(nextProps && 'shapeVo' in nextProps) {
-			let {x,y, w, h} = shapeVo;
+			let {x,y, w, h} = nextProps.shapeVo;
 			let style = {
 				left: x,
 				top: y,
@@ -67,7 +66,7 @@ class ResizeSvg extends Component {
 				width: `${w}px`,
 				height: `${h}px`
 			}
-			this.setState({shapeVo: shapeVo, style});
+			this.setState({shapeVo: nextProps.shapeVo, style});
 			
 		}
 	}
@@ -83,11 +82,12 @@ class ResizeSvg extends Component {
 			this.setState({deafultSvgContainerStyle: 'resize-svg-svg-container'});
 		}
 		
-		let currMouseX = event.clientX;
-		let currMouseY = event.clientY;
+		let currMouseX = e.clientX;
+		let currMouseY = e.clientY;
 
 		let deltaX = currMouseX - this.lastMouseX;
 		let deltaY = currMouseY - this.lastMouseY;
+		//console.log(currMouseX, deltaX, this.lastMouseX);
 
 		this.applyMouseMoveAction(deltaX, deltaY, e);
 
@@ -97,7 +97,7 @@ class ResizeSvg extends Component {
 		this.lastMouseY = currMouseY;
 	}
 
-	mouseDownHandler(actionType, e) {
+	mouseDownHandler(actionType) {
 		this.currentAction = actionType;
 		
 	}
@@ -152,20 +152,13 @@ class ResizeSvg extends Component {
 			this.isClickMove = true;
 		}
 
-		this.updatePosition(deltaLeft, deltaTop);
+		this.updatePosition(deltaLeft, deltaTop, e);
 		this.updateSize(deltaWidth, deltaHeight);
 
-		if (e.target == ReactDOM.findDOMNode(this.refs.moveRect)) {
-			let {shapeVo} = this.state;
-			let { onSvgMouseMove } = this.props;
-			if (onSvgMouseMove) {
-				onSvgMouseMove(shapeVo);
-			}
-		}
 	}
 
-	updatePosition(deltaLeft, deltaTop) {
-		let { style,shapeVo } = this.state;
+	updatePosition(deltaLeft, deltaTop, e) {
+		let { style, shapeVo} = this.state;
 		let { left, top } = style;
 
 		let newStyle = Object.assign({}, style, {
@@ -173,9 +166,17 @@ class ResizeSvg extends Component {
 			top: top + deltaTop
 		});
 
-		shapeVo.x = left;
-		shapeVo.y = top;
+		shapeVo.x = newStyle.left;
+		shapeVo.y = newStyle.top;
 		this.setState({ style: newStyle });
+
+		if (e.target == ReactDOM.findDOMNode(this.refs.moveRect)) {
+			
+			let { onSvgMouseMove } = this.props;
+			if (onSvgMouseMove) {
+				onSvgMouseMove(shapeVo);
+			}
+		}
 	}
 
 	updateSize(deltaWidth, deltaHeight) {
