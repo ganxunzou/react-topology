@@ -32,6 +32,7 @@ class ResizeSvg extends Component {
 
 		this.state = {
 			padding: 8, // padding
+			border:8,
 			style: {
 				left: left || 0,
 				top: top || 0,
@@ -225,7 +226,7 @@ class ResizeSvg extends Component {
 	}
 
 	render() {
-		let { padding, style, isAction, deafultSvgContainerStyle } = this.state;
+		let { padding, border, style, isAction, deafultSvgContainerStyle } = this.state;
 		let { w, h } = style;
 		let {
 			width,
@@ -233,13 +234,6 @@ class ResizeSvg extends Component {
 			top,
 			left,
 			children,
-			// custom classname
-			svgContainerStyle,
-			showLineStyle,
-			showCircleStyle,
-			triggerLineStyle,
-			triggerCircleStyle,
-			triggerMoveRectStyle,
 			shapeVo,
 			selType,
 			isLock,
@@ -249,17 +243,17 @@ class ResizeSvg extends Component {
 			...otherProps
 		} = this.props;
 
-		// console.log(shapeVo, selType, isLock, key, onSvgMouseMove, onSvgClick);
-
 		const childrenWithProps =
 			children &&
 			React.Children.map(children, child => {
 				return React.cloneElement(child, {
 					padding,
-					contentWidth: w - padding * 2,
-					contentHeight: h - padding * 2,
+					border,
+					contentWidth: w - padding * 2 - border *2,
+					contentHeight: h - padding * 2 - border*2,
 					width: w,
 					height: h,
+					shapeVo,
 					...otherProps
 				});
 			});
@@ -268,10 +262,7 @@ class ResizeSvg extends Component {
 		return (
 			<svg
 				ref="svgContainer"
-				className={classnames(
-					`${deafultSvgContainerStyle}`,
-					svgContainerStyle
-				)}
+				className={classnames( `${deafultSvgContainerStyle}`)}
 				style={this.state.style}
 				xmlns="http://www.w3.org/2000/svg"
 				version="1.1"
@@ -280,10 +271,7 @@ class ResizeSvg extends Component {
 				{/* 四条显示的边框：虚线 */}
 				<g
 					id="gShowLine"
-					className={classnames(
-						"resize-svg-show-line",
-						showLineStyle
-					)}
+					className={classnames("resize-svg-show-line")}
 					style={{ stroke: isDrawLine ? "green" : "" }}
 				>
 					<line
@@ -313,10 +301,7 @@ class ResizeSvg extends Component {
 				</g>
 				<g
 					id="gShowCircle"
-					className={classnames(
-						"resize-svg-show-circle",
-						showCircleStyle
-					)}
+					className={classnames("resize-svg-show-circle")}
 					style={{ display: !isDrawLine && isAction ? "" : "none" }}
 				>
 					<circle cx={padding} cy={padding} r={padding / 2} />
@@ -345,10 +330,7 @@ class ResizeSvg extends Component {
 						y={padding}
 						width={`${w - padding * 2}px`}
 						height={`${h - padding * 2}px`}
-						className={classnames(
-							"resize-svg-trigger-move-rect",
-							triggerMoveRectStyle
-						)}
+						className={classnames("resize-svg-trigger-move-rect")}
 						style={{ cursor: isDrawLine ? "default" : "move" }}
 						onMouseDown={() => {
 							!isDrawLine &&
@@ -364,10 +346,7 @@ class ResizeSvg extends Component {
 						x2={`${w - padding}px`}
 						y2={padding}
 						style={{ cursor: "n-resize" }}
-						className={classnames(
-							"resize-svg-trigger-line",
-							triggerLineStyle
-						)}
+						className={classnames("resize-svg-trigger-line")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.TopResize);
 						}}
@@ -378,10 +357,7 @@ class ResizeSvg extends Component {
 						x2={`${w - padding}px`}
 						y2={`${h - padding}px`}
 						style={{ cursor: "e-resize" }}
-						className={classnames(
-							"resize-svg-trigger-line",
-							triggerLineStyle
-						)}
+						className={classnames("resize-svg-trigger-line")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.RightResize);
 						}}
@@ -392,10 +368,7 @@ class ResizeSvg extends Component {
 						x2={padding}
 						y2={`${h - padding}px`}
 						style={{ cursor: "s-resize" }}
-						className={classnames(
-							"resize-svg-trigger-line",
-							triggerLineStyle
-						)}
+						className={classnames("resize-svg-trigger-line")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.BottomResize);
 						}}
@@ -406,10 +379,7 @@ class ResizeSvg extends Component {
 						x2={padding}
 						y2={padding}
 						style={{ cursor: "w-resize" }}
-						className={classnames(
-							"resize-svg-trigger-line",
-							triggerLineStyle
-						)}
+						className={classnames("resize-svg-trigger-line")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.LeftResize);
 						}}
@@ -425,10 +395,7 @@ class ResizeSvg extends Component {
 						cy={padding}
 						r={padding}
 						style={{ cursor: "nw-resize" }}
-						className={classnames(
-							"resize-svg-trigger-circle",
-							triggerCircleStyle
-						)}
+						className={classnames("resize-svg-trigger-circle")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.TopLeftResize);
 						}}
@@ -438,10 +405,7 @@ class ResizeSvg extends Component {
 						cy={padding}
 						r={padding}
 						style={{ cursor: "ne-resize" }}
-						className={classnames(
-							"resize-svg-trigger-circle",
-							triggerCircleStyle
-						)}
+						className={classnames("resize-svg-trigger-circle")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.TopRightResize);
 						}}
@@ -451,10 +415,7 @@ class ResizeSvg extends Component {
 						cy={`${h - padding}px`}
 						r={padding}
 						style={{ cursor: "se-resize" }}
-						className={classnames(
-							"resize-svg-trigger-circle",
-							triggerCircleStyle
-						)}
+						className={classnames("resize-svg-trigger-circle")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.BottomRightResize);
 						}}
@@ -464,10 +425,7 @@ class ResizeSvg extends Component {
 						cy={`${h - padding}px`}
 						r={padding}
 						style={{ cursor: "sw-resize" }}
-						className={classnames(
-							"resize-svg-trigger-circle",
-							triggerCircleStyle
-						)}
+						className={classnames("resize-svg-trigger-circle")}
 						onMouseDown={() => {
 							this.mouseDownHandler(ActionType.BottomLeftResize);
 						}}

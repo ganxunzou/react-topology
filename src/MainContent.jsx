@@ -261,6 +261,8 @@ class MainContent extends Component {
 						height="100"
 						top={y}
 						left={x}
+						rx={shapeVo.rx}
+						ry={shapeVo.ry}
 						style={{ fill: "red" }}
 						shapeVo={shapeVo}
 						isLock={isLock}

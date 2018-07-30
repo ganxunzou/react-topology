@@ -3,17 +3,18 @@ import ResizeSvgHOC from "./ResizeSvgHOC";
 
 class DiamondSvg extends Component {
 	render() {
-		let { padding, contentWidth, contentHeight } = this.props;
-    let points = `${padding},${contentHeight / 2 +padding} 
-    ${contentWidth / 2 + padding},${padding} 
-    ${contentWidth+padding}, ${contentHeight / 2 + padding} 
-    ${contentWidth / 2 + padding},${contentHeight + padding}`;
+    let { padding,border, contentWidth, contentHeight } = this.props;
+    let bp = padding + border;
+    let points = `${bp},${contentHeight / 2 +bp} 
+    ${contentWidth / 2 + bp},${bp} 
+    ${contentWidth+bp}, ${contentHeight / 2 + bp} 
+    ${contentWidth / 2 + bp},${contentHeight + bp}`;
     
     // console.log(points);
 		return (
 			<polygon
         points={points}
-        style={{fill: 'blue'}}
+				style={{ fill: "green", strokeWidth: 8, stroke: '#000', strokeOpacity: '0.3'}}
 			/>
 		);
 	}

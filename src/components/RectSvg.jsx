@@ -6,16 +6,17 @@ class RectSvg extends Component {
 		super();
 	}
 	render() {
-		// style 从外部传入
-		let { padding, contentWidth, contentHeight,shapeVo, id, ...otherProps} = this.props;
-		// console.log('className', className);c\
+		let { padding,border, contentWidth, contentHeight,shapeVo, id, ...otherProps} = this.props;
+		let {rx, ry} = otherProps;
 		return (
 			<rect
-				{...otherProps}
-				x={padding}
-				y={padding}
+				x={padding+border}
+				y={padding+border}
         width={contentWidth}
 				height={contentHeight}
+				style={{ fill: "green", strokeWidth: 8, stroke: '#000', strokeOpacity: '0.3'}}
+				rx={rx}
+				ry={ry}
 			/>
 		);
 	}

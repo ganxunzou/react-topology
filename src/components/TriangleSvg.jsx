@@ -3,16 +3,17 @@ import ResizeSvgHOC from "./ResizeSvgHOC";
 
 class TriangleSvg extends Component {
   render() {
-    let { padding, contentWidth, contentHeight } = this.props;
+    let { padding,border, contentWidth, contentHeight } = this.props;
 
-    let points = `${padding},${contentHeight + padding} 
-      ${contentWidth / 2 + padding},${padding} 
-      ${contentWidth + padding}, ${contentHeight + padding} `;
+    let bp = padding + border;
+    let points = `${bp},${contentHeight + bp} 
+      ${contentWidth / 2 + bp},${bp} 
+      ${contentWidth + bp}, ${contentHeight + bp} `;
 
     return (
       <polygon
         points={points}
-        style={{fill: 'blue'}}
+        style={{ fill: "green", strokeWidth: 8, stroke: '#000', strokeOpacity: '0.3'}}
 			/>
     );
   }

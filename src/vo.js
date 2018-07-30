@@ -42,10 +42,14 @@ class ShapeVo extends BaseVo {
  * 方形 VO
  */
 class RectShapeVo extends ShapeVo {
-	constructor(id, x = 0, y = 0, w = 100, h = 100, rx, ry) {
+	constructor(id, x = 0, y = 0, w = 100, h = 100, rx=0, ry=0) {
 		super(id, x, y, w, h, ShapeType.Rect);
 		this.rx = rx;
 		this.ry = ry;
+		this.iterationAtt = this.iterationAtt.concat([
+			{ att: "rx", dataType: "int" },
+			{ att: "ry", dataType: "int" },
+		])
 	}
 }
 
