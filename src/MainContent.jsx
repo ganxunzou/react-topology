@@ -367,6 +367,7 @@ class MainContent extends Component {
 		let toY = lineVo.toNode.y;
 		return (
 			<PolylineSvg
+				lineVo={lineVo}
 				key={lineVo.id}
 				startPt={`${sX},${sY}`}
 				endPt={`${toX},${toY}`}
@@ -378,24 +379,23 @@ class MainContent extends Component {
 		let { tempLineVo } = this.state;
 		if (!tempLineVo || !tempLineVo.fromNode) return null;
 
-		let sX = tempLineVo.fromNode.x;
-		let sY = tempLineVo.fromNode.y;
-		if (tempLineVo.tempToX == 0) tempLineVo.tempToX = sX;
-		if (tempLineVo.tempToY == 0) tempLineVo.tempToY = sY;
+		// let sX = tempLineVo.fromNode.x;
+		// let sY = tempLineVo.fromNode.y;
+		// if (tempLineVo.tempToX == 0) tempLineVo.tempToX = sX;
+		// if (tempLineVo.tempToY == 0) tempLineVo.tempToY = sY;
 
-		let tX = tempLineVo.toNode ? tempLineVo.toNode.x : tempLineVo.tempToX;
-		let tY = tempLineVo.toNode ? tempLineVo.toNode.y : tempLineVo.tempToY;
+		// let tX = tempLineVo.toNode ? tempLineVo.toNode.x : tempLineVo.tempToX;
+		// let tY = tempLineVo.toNode ? tempLineVo.toNode.y : tempLineVo.tempToY;
 
-		let pts = [sX, sY, tX, tY];
-		//this.calcLineStartAndEndPoint(tempLineVo);
+		// let pts = [sX, sY, tX, tY];
+		// //this.calcLineStartAndEndPoint(tempLineVo);
 
-		pts = pts || [sX, sY, tX, tY];
+		// pts = pts || [sX, sY, tX, tY];
 		//React.cloneElement(line,{startPt: `${sX},${sY}`, endPt: `${tempLineVo.tempToX},${tempLineVo.tempToY}`});
 		return (
 			<PolylineSvg
+				lineVo={tempLineVo}
 				key={tempLineVo.id}
-				startPt={`${pts[0]},${pts[1]}`}
-				endPt={`${pts[2]},${pts[3]}`}
 			/>
 		);
 	};

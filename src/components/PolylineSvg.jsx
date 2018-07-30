@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import CoordinateCalcUtils from '../utils/CoordinateCalcUtils';
 
 class PolylineSvg extends Component {
 	constructor(props) {
@@ -18,11 +19,9 @@ class PolylineSvg extends Component {
 	}
 
 	calcPolyLinePoints() {
-		let { startPt, endPt } = this.props;
-
-		let pts = startPt;
-		pts += " " + endPt;
-		//console.log('pts', pts);
+		
+		let { lineVo } = this.props;
+		let pts = CoordinateCalcUtils.calcPointsByLineVo(lineVo);
 		return pts;
 	}
 
@@ -50,7 +49,7 @@ class PolylineSvg extends Component {
 							cx="4"
 							cy="4"
 							r="2"
-							style={{fill: `#000`, stroke: '#000'}}
+							style={{fill: `green`, stroke: 'green'}}
 						/>
 					</marker>
 					<marker
@@ -63,14 +62,14 @@ class PolylineSvg extends Component {
 					>
 						<path
 							d="M 0 0 8 2 0 4"
-							style={{fill: `#000`, stroke: '#000'}}
+							style={{fill: `green`, stroke: 'green'}}
 						/>
 					</marker>
 				</defs>
 				<polyline
 					style={{ pointerEvents: "auto" }}
 					points={pts}
-					style={{ fill: "none", stroke: "#000", strokeWidth: 1 , markerStart: "url(#circle)", markerEnd: "url(#arrow)"}}
+					style={{ fill: "none", stroke: "green", strokeWidth: 1 , markerStart: "url(#circle)", markerEnd: "url(#arrow)"}}
 				/>
 			</svg>
 		);
