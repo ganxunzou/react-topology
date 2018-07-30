@@ -475,9 +475,6 @@ class MainContent extends Component {
 			lineVo.fromNode = shapeVos[lineVo.fromNode.id];
 			lineVo.toNode = shapeVos[lineVo.toNode.id];
 		}
-
-		
-
 		return lineVos;
 	}
 
