@@ -54,7 +54,7 @@ const config = {
 			},
 			{
 				test: /\.less$/,
-				exclude: [/src/],
+				include: [/node_modules/],
 				use: [
 						require.resolve('style-loader'),
 						{
