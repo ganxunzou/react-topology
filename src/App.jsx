@@ -5,7 +5,9 @@ const SubMenu = Menu.SubMenu;
 
 import MainContent from './MainContent';
 import {ShapeType, LineType, SelType} from './constant';
-
+import ElementQueries from 'css-element-queries/src/ElementQueries';
+ElementQueries.listen();
+ElementQueries.init();
 import style from "./App.less";
 
 export default class App extends React.Component {
@@ -52,7 +54,7 @@ export default class App extends React.Component {
 					<Menu
 						theme="dark"
 						mode="horizontal"
-						defaultSelectedKeys={["2"]}
+						defaultSelectedKeys={["1"]}
 						style={{ lineHeight: "64px" }}
 					>
 						<Menu.Item key="1">nav 1</Menu.Item>
@@ -60,7 +62,7 @@ export default class App extends React.Component {
 						<Menu.Item key="3">nav 3</Menu.Item>
 					</Menu>
 				</Header>
-				<Layout style={{height:`600px`}}>
+				<Layout style={{height:`800px`}}>
 					<Sider width={200} style={{ background: "#fff" }}>
 						<Menu theme="dark"
 							mode="inline"

@@ -5,7 +5,7 @@ const { Content, Sider } = Layout;
 const Panel = Collapse.Panel;
 const ButtonGroup = Button.Group;
 
-import { ShapeType, LineType, SelType, Quadrant } from "./constant";
+import { ShapeType, SelType } from "./constant";
 import { DiamondSvg, EllipseSvg, RectSvg, TriangleSvg } from "react-resize-svg";
 import PolylineSvg from "./components/PolylineSvg";
 import ShapeAtt from "./components/ShapeAtt";
@@ -14,12 +14,13 @@ import {
 	DiamondShapeVo,
 	TriangleShapeVo,
 	EllipseShapeVo,
-	LineVo,
-	Point
+	LineVo
 } from "./vo";
 
-import style from './MainContent.less';
-import FileUtils from './utils/FileUtils';
+import style from "./MainContent.less";
+import FileUtils from "./utils/FileUtils";
+import EagleEye from "./components/EagleEye";
+import ResizeSensor from "css-element-queries/src/ResizeSensor";
 
 class MainContent extends Component {
 	constructor(props) {
@@ -28,9 +29,73 @@ class MainContent extends Component {
 			shapeVos: {}, // key: uuid , value ShapeVo
 			lineVos: {}, // key: uuid ,value lineVo
 			tempLineVo: null,
-			selectedShapeVos: [] // 选中图形列表
+			selectedShapeVos: [], // 选中图形列表
+			scaleRatio: 1, // 缩放比例,
+			mainContentLeft: 0,
+			mainContentTop: 0,
+			mainContentWidth: 0,
+			mainContentHeight: 0, 
 		};
+
+		this.startMoveMainContent = false;
+		this.lastMouseX = 0;
+		this.lastMouseY = 0;
+
+		window.addEventListener(
+			"mouseup",
+			this.windowMouseUpHandler.bind(this)
+		);
+		window.addEventListener(
+			"mousemove",
+			this.windowMouseMoveHandler.bind(this)
+		);
+		window.addEventListener(
+			"mousedown",
+			this.windowMouseDownHandler.bind(this)
+		);
 	}
+
+	windowMouseUpHandler = e => {
+		this.startMoveMainContent = false;
+	};
+
+	windowMouseDownHandler = e => {
+		let { isLock } = this.props;
+		if (
+			!isLock &&
+			ReactDOM.findDOMNode(this.refs.mainContent) == e.target
+		) {
+			this.lastMouseX = e.clientX;
+			this.lastMouseY = e.clientY;
+			this.startMoveMainContent = true;
+			return;
+		}
+	};
+
+	windowMouseMoveHandler = e => {
+		let { isLock } = this.props;
+		if (!isLock && this.startMoveMainContent) {
+			this.doMainContentMouseMoveHandler(e);
+			return;
+		}
+	};
+
+	doMainContentMouseMoveHandler = e => {
+		let currMouseX = e.clientX;
+		let currMouseY = e.clientY;
+
+		let deltaX = currMouseX - this.lastMouseX;
+		let deltaY = currMouseY - this.lastMouseY;
+
+		let { mainContentLeft, mainContentTop } = this.state;
+
+		mainContentLeft = mainContentLeft + deltaX;
+		mainContentTop = mainContentTop + deltaY;
+		this.setState({ mainContentLeft, mainContentTop });
+
+		this.lastMouseX = e.clientX;
+		this.lastMouseY = e.clientY;
+	};
 
 	// 根据位置获取对应的ShapeVo
 	getShapeVoByArea = (x, y) => {
@@ -53,6 +118,9 @@ class MainContent extends Component {
 	};
 
 	mainClickHandler = e => {
+		let { scaleRatio, mainContentLeft } = this.state;
+		console.log(scaleRatio, mainContentLeft);
+		console.log(e.target.getBoundingClientRect());
 		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) {
 			// 重置
 			// this.setState({selectedShapeVo: null})
@@ -70,8 +138,6 @@ class MainContent extends Component {
 	};
 
 	mainMouseDownHandler = e => {
-		//let id = e.target.id;
-
 		let { isLock, selType } = this.props;
 		if (selType == SelType.LINE && isLock) {
 			this.createTempLineVo(e.target.id, e);
@@ -124,6 +190,8 @@ class MainContent extends Component {
 	};
 
 	mainMouseUpHandler = e => {
+		this.startMoveMainContent = false;
+
 		// let shapeVo = this.getShapeVoByArea(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
 		let id = e.target.id;
 		let { tempLineVo, shapeVos } = this.state;
@@ -202,8 +270,7 @@ class MainContent extends Component {
 	};
 
 	svgChangeActionHandler = (isAction, shapeVo, isLock) => {
-		if(isLock)
-			return;
+		if (isLock) return;
 
 		if (isAction) {
 			//	this.setState({selectedShapeVo: shapeVo})	;
@@ -392,12 +459,7 @@ class MainContent extends Component {
 
 		// pts = pts || [sX, sY, tX, tY];
 		//React.cloneElement(line,{startPt: `${sX},${sY}`, endPt: `${tempLineVo.tempToX},${tempLineVo.tempToY}`});
-		return (
-			<PolylineSvg
-				lineVo={tempLineVo}
-				key={tempLineVo.id}
-			/>
-		);
+		return <PolylineSvg lineVo={tempLineVo} key={tempLineVo.id} />;
 	};
 
 	calcLineStartAndEndPoint = lineVo => {
@@ -442,79 +504,148 @@ class MainContent extends Component {
 		this.forceUpdate();
 	};
 
-	
-	saveDataClickHandler=()=>{
-		let {shapeVos, lineVos} = this.state;
-		let retData ={
+	saveDataClickHandler = () => {
+		let { shapeVos, lineVos } = this.state;
+		let retData = {
 			shapeVos,
-			lineVos,
-		}
+			lineVos
+		};
 
 		let content = JSON.stringify(retData);
-		var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
-		FileUtils.saveFile(blob, 'react-topology.json')
+		var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+		FileUtils.saveFile(blob, "react-topology.json");
+	};
 
-	}
-
-	loadDataClickHandler=()=>{
-		FileUtils.loadJsonFile((str)=>{
-			if(str){
+	loadDataClickHandler = () => {
+		FileUtils.loadJsonFile(str => {
+			if (str) {
 				let obj = JSON.parse(str);
 
-				let {shapeVos, lineVos} = obj;
+				let { shapeVos, lineVos } = obj;
 				let fromLineVos = this.formatLineVos(shapeVos, lineVos);
-				this.setState({shapeVos, lineVos: fromLineVos});
+				this.setState({ shapeVos, lineVos: fromLineVos });
 			}
 		});
-	}
+	};
 
-	formatLineVos=(shapeVos, lineVos)=>{
-
+	formatLineVos = (shapeVos, lineVos) => {
 		for (const id in lineVos) {
 			let lineVo = lineVos[id];
 			lineVo.fromNode = shapeVos[lineVo.fromNode.id];
 			lineVo.toNode = shapeVos[lineVo.toNode.id];
 		}
 		return lineVos;
+	};
+
+	componentDidMount() {
+
+		let mainContent = ReactDOM.findDOMNode(this.refs.mainContent);
+		new ResizeSensor(mainContent, ()=>{
+		
+			let mW = mainContent.getBoundingClientRect().width;
+			let mH = mainContent.getBoundingClientRect().width;	
+			console.log('mainContent resize',mW, mH );
+			this.setState({ mainContentWidth: mW, mainContentHeight: mH });
+		});
+	}
+
+	mainWheelHandler = event => {
+		// console.log(event.nativeEvent);
+		event.preventDefault();
+		// console.log(event.deltaMode, event.deltaX, event.deltaY)
+		let { scaleRatio } = this.state;
+		if (event.deltaY > 0) {
+			scaleRatio -= 0.1;
+			this.setState({ scaleRatio });
+		} else {
+			scaleRatio += 0.1;
+			this.setState({ scaleRatio });
+		}
+		// let mainContent = ReactDOM.findDOMNode(this.refs.mainContent);
+		// let mW = mainContent.getBoundingClientRect().width;
+	};
+
+	viewPortMoveHandler=(deltaX, deltaY)=>{
+		let { mainContentLeft, mainContentTop } = this.state;
+
+		mainContentLeft = mainContentLeft + deltaX;
+		mainContentTop = mainContentTop + deltaY;
+		this.setState({ mainContentLeft, mainContentTop });
 	}
 
 	render() {
 		let nodes = this.renderNodes();
-		let { selectedShapeVos } = this.state;
+		let {
+			selectedShapeVos,
+			shapeVos,
+			scaleRatio,
+			mainContentLeft,
+			mainContentTop,
+			mainContentWidth,
+			mainContentHeight
+		} = this.state;
 		let selectedShapeVo =
 			selectedShapeVos.length > 0 &&
 			selectedShapeVos[selectedShapeVos.length - 1];
 
+		//console.log(	{transform: `scale(${scaleRatio})`});
 		return (
 			<Layout style={{ padding: "0 24px 24px" }}>
 				<ButtonGroup style={{ padding: "10px 0" }}>
-					<Button type="primary" onClick={this.loadDataClickHandler} >加载数据</Button>
-					<Button type="primary" onClick={this.saveDataClickHandler}>保存数据</Button>
+					<Button type="primary" onClick={this.loadDataClickHandler}>
+						加载数据
+					</Button>
+					<Button type="primary" onClick={this.saveDataClickHandler}>
+						保存数据
+					</Button>
 				</ButtonGroup>
 				<Layout>
 					<Content
-						ref="mainContent"
-						onClick={this.mainClickHandler}
-						onMouseDown={this.mainMouseDownHandler}
-						onMouseMove={this.mainMouseMoveHandler}
-						onMouseUp={this.mainMouseUpHandler}
 						style={{
-							background: "#fff",
+							background: "#ccc",
 							position: "relative",
-							overflow: "auto"
+							overflow: "hidden"
 						}}
 					>
-						{nodes}
+						<div
+							style={{
+								background: "#fff",
+								position: "absolute",
+								width: "100%",
+								height: "100%",
+								transform: `scale(${scaleRatio})`,
+								transition: "transform 0.3s",
+								left: `${mainContentLeft}px`,
+								top: `${mainContentTop}px`
+							}}
+							ref="mainContent"
+							onClick={this.mainClickHandler}
+							onMouseDown={this.mainMouseDownHandler}
+							onMouseMove={this.mainMouseMoveHandler}
+							onMouseUp={this.mainMouseUpHandler}
+							onWheel={this.mainWheelHandler}
+						>
+							{nodes}
+						</div>
+						<EagleEye
+							shapeVos={shapeVos}
+							mainContentLeft={mainContentLeft}
+							mainContentTop={mainContentTop}
+							mainContentWidth={mainContentWidth}
+							mainContentHeight={mainContentHeight}
+							scaleRatio={scaleRatio}
+							onViewPortMove={this.viewPortMoveHandler}
+						/>
 					</Content>
 					<Sider width={200} theme="dark">
-						<Collapse 
+						<Collapse
 							defaultActiveKey={["1"]}
 							style={{ height: "100%", borderRadius: 0 }}
 						>
 							<Panel
 								header="属性"
 								key="1"
-								style={{ height: "100%"}}
+								style={{ height: "100%" }}
 							>
 								<ShapeAtt
 									shapeVo={selectedShapeVo}

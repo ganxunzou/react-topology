@@ -50,8 +50,8 @@ class ResizeSvg extends Component {
 
 		this.lastMouseX = 0;
 		this.lastMouseY = 0;
-		window.addEventListener("mouseup", this.mouseUpHandler.bind(this));
-		window.addEventListener("mousemove", this.mouseMoveHandler.bind(this));
+		window.addEventListener("mouseup", this.windowMouseUpHandler.bind(this));
+		window.addEventListener("mousemove", this.windowMouseMoveHandler.bind(this));
 
 		// this.shapeVo = props.shapeVo;
 	}
@@ -72,13 +72,13 @@ class ResizeSvg extends Component {
 		}
 	}
 	
-	mouseUpHandler(e) {
+	windowMouseUpHandler(e) {
 		this.currentAction = ActionType.None;
 
 		this.setState({deafultSvgContainerStyle: 'resize-svg-svg-container-dynamic'});
 	}
 
-	mouseMoveHandler(e) {
+	windowMouseMoveHandler(e) {
 		if (e.target == ReactDOM.findDOMNode(this.refs.moveRect)) {
 			this.setState({deafultSvgContainerStyle: 'resize-svg-svg-container'});
 		}
@@ -224,6 +224,13 @@ class ResizeSvg extends Component {
 		let { onSvgChangeAction } = this.props;
 		onSvgChangeAction && onSvgChangeAction(!isAction, shapeVo, isLock);
 	}
+	componentWillUnmount() {
+		if(window) {
+			window.removeEventListener("mouseup", this.windowMouseUpHandler.bind(this));
+			window.removeEventListener("mousemove", this.windowMouseMoveHandler.bind(this));
+		}
+	}
+	
 
 	render() {
 		let { padding, border, style, isAction, deafultSvgContainerStyle } = this.state;

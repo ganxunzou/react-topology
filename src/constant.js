@@ -26,3 +26,8 @@ export const Quadrant = {
 	OneFour: '14',
 	TwoThree: '23',
 }
+
+// 鹰眼 宽度
+export const EagleEyeW = 150;
+// 鹰眼 高度
+export const EagleEyeH = 150;
