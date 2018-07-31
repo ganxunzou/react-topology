@@ -26,6 +26,10 @@ class ShapeAtt extends Component {
 		let value = null;
 		if(attObj.dataType == 'int') {
 			value = parseInt(e.target.value);
+		} else if(attObj.dataType == 'string') {
+			value = e.target.value;
+		} else {
+			console.error("未知数据类型")
 		}
 
 		let {shapeVo} = this.state;

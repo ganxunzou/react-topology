@@ -25,14 +25,17 @@ class ShapeVo extends BaseVo {
 			{ att: "x", dataType: "int" },
 			{ att: "y", dataType: "int" },
 			{ att: "w", dataType: "int" },
-			{ att: "h", dataType: "int" }
-		]
+			{ att: "h", dataType: "int" },
+			{ att: "text", dataType: "string" },
+		],
+		text = "文本",
 	) {
 		super(id);
 		this.x = x;
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.text = text;
 		this.shapeType = shapeType;
 		this.iterationAtt = iterationAtt;
 	}
