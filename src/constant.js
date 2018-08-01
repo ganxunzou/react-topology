@@ -39,3 +39,8 @@ export const ShapeBorder = 8;
 
 // 两个图形之间相同坐标间距，例如：Shape1.x - Shape2.x > ShapeMinSpacing
 export const ShapeMinSpacing = 20;
+
+export const MainContentAction = {
+	Move: '1', // 移动
+	Edit: '2', // 编辑
+}

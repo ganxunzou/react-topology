@@ -7,13 +7,13 @@ class EagleEye extends Component {
 	constructor(props) {
     super();
 
-    let {viewPortW, viewPortH, viewPortLeft, viewPortTop} = props.mainContentWidth && this.calcViewPortPosition();
+    let {viewPortW, viewPortH, viewPortLeft, viewPortTop} = props.mainContentWidth && this.calcViewPortPosition(props);
 		this.state = {
 			shapeVos: props.shapeVos,
-			mainContentLeft: props.mainContentLeft || 0,
-			mainContentTop: props.mainContentTop || 0,
-			mainContentWidth: props.mainContentWidth || 0,
-			mainContentHeight: props.mainContentHeight || 0,
+			// mainContentLeft: props.mainContentLeft || 0,
+			// mainContentTop: props.mainContentTop || 0,
+			// mainContentWidth: props.mainContentWidth || 0,
+			// mainContentHeight: props.mainContentHeight || 0,
       scaleRatio: props.scaleRatio || 1,
       viewPortW: viewPortW || 0, 
       viewPortH: viewPortH || 0, 
@@ -75,23 +75,26 @@ class EagleEye extends Component {
 		}
 
 		if (nextProps && "mainContentLeft" in nextProps) {
-			this.setState({ mainContentLeft: nextProps.mainContentLeft });
+			// this.setState({ mainContentLeft: nextProps.mainContentLeft });
+			this.updateViewPort(nextProps);
 		}
 		if (nextProps && "mainContentTop" in nextProps) {
-			this.setState({ mainContentTop: nextProps.mainContentTop });
+			// this.setState({ mainContentTop: nextProps.mainContentTop });
+			this.updateViewPort(nextProps);
 		}
 		if (nextProps && "mainContentWidth" in nextProps) {
-      this.setState({ mainContentWidth: nextProps.mainContentWidth });
-      this.updateViewPort();
+      // this.setState({ mainContentWidth: nextProps.mainContentWidth });
+      this.updateViewPort(nextProps);
 		}
 
 		if (nextProps && "mainContentHeight" in nextProps) {
-			this.setState({ mainContentHeight: nextProps.mainContentHeight });
+			this.updateViewPort(nextProps);
+			// this.setState({ mainContentHeight: nextProps.mainContentHeight });
 		}
 
 		if (nextProps && "scaleRatio" in nextProps) {
-      this.setState({ scaleRatio: nextProps.scaleRatio });
-      this.updateViewPort();
+			// this.setState({ scaleRatio: nextProps.scaleRatio });
+      this.updateViewPort(nextProps);
 		}
 	}
 
@@ -110,7 +113,7 @@ class EagleEye extends Component {
 			let sY = this.convertVerticalPx(shapeVo.y);
 			let sW = this.convertHorizontalPx(shapeVo.w);
 			let sH = this.convertVerticalPx(shapeVo.h);
-
+			
 			shapeNodes.push(
 				<rect
 					className={style.eagleEyeShape} key={id}
@@ -122,19 +125,19 @@ class EagleEye extends Component {
     return shapeNodes;
 	};
 
-  updateViewPort=()=>{
-    let {viewPortW, viewPortH, viewPortLeft, viewPortTop} = this.calcViewPortPosition();
+  updateViewPort=(props)=>{
+		let {viewPortW, viewPortH, viewPortLeft, viewPortTop} = this.calcViewPortPosition(props);
     this.setState({viewPortW, viewPortH, viewPortLeft, viewPortTop});
   }
 
-	calcViewPortPosition = () => {
+	calcViewPortPosition = (props) => {
 		let {
 			mainContentWidth,
 			mainContentHeight,
 			mainContentLeft,
 			mainContentTop,
 			scaleRatio
-    } = this.state;
+		} = props;
     
 		let maxWidth = mainContentWidth * scaleRatio;
 		let eagleEyeRatio = mainContentWidth / maxWidth;
@@ -164,7 +167,7 @@ class EagleEye extends Component {
 		// mainContent 中 1px 对应 1px * EagleEyeW / mainContentWidth = ?px
 		// 缩放情况下横向PX转换：
 		// mainContent 中的 1px 对应 1px * EagleEyeW /( mainContentWidth * scaleRatio) =?px
-    let { mainContentWidth, scaleRatio } = this.state;
+    let { mainContentWidth, scaleRatio } = this.props;
 		return (hPx * EagleEyeW) / (mainContentWidth * scaleRatio);
   };
   
@@ -173,19 +176,19 @@ class EagleEye extends Component {
 		// mainContent 中 1px 对应 1px * EagleEyeW / mainContentWidth = ?px
 		// 缩放情况下横向PX转换：
 		// mainContent 中的 1px 对应 1px * EagleEyeW /( mainContentWidth * scaleRatio) =?px
-		let { mainContentHeight, scaleRatio } = this.state;
+		let { mainContentHeight, scaleRatio } = this.props;
 		return (vPx * EagleEyeH) / (mainContentHeight * scaleRatio);
   };
   
   // 将viewport移动的px，转成mainContent移动的px
   convertHorizontalPxReverse=(hPx)=>{
-    let { mainContentWidth, scaleRatio } = this.state;
+    let { mainContentWidth, scaleRatio } = this.props;
     return hPx * (mainContentWidth * scaleRatio) / EagleEyeW;
   }
 
   // 将viewport移动的px，转成mainContent移动的px
   convertVerticalPxReverse=(vPx)=>{
-    let { mainContentHeight, scaleRatio } = this.state;
+    let { mainContentHeight, scaleRatio } = this.props;
     return vPx * (mainContentHeight * scaleRatio) / EagleEyeH;
   }
 

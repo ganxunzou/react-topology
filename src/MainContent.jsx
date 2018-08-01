@@ -5,7 +5,7 @@ const { Content, Sider } = Layout;
 const Panel = Collapse.Panel;
 const ButtonGroup = Button.Group;
 
-import { ShapeType, SelType } from "./constant";
+import { ShapeType, SelType, MainContentAction } from "./constant";
 import { DiamondSvg, EllipseSvg, RectSvg, TriangleSvg } from "react-resize-svg";
 import PolylineSvg from "./components/PolylineSvg";
 import ShapeAtt from "./components/ShapeAtt";
@@ -21,6 +21,7 @@ import style from "./MainContent.less";
 import FileUtils from "./utils/FileUtils";
 import EagleEye from "./components/EagleEye";
 import ResizeSensor from "css-element-queries/src/ResizeSensor";
+import MainTool from "./components/MainTool";
 
 class MainContent extends Component {
 	constructor(props) {
@@ -29,7 +30,7 @@ class MainContent extends Component {
 			shapeVos: {}, // key: uuid , value ShapeVo
 			lineVos: {}, // key: uuid ,value lineVo
 			tempLineVo: null,
-			selectedShapeVos: [], // 选中图形列表
+			selectedShapeVoArr: [], // 选中图形列表
 			scaleRatio: 1, // 缩放比例,
 			mainContentLeft: 0,
 			mainContentTop: 0,
@@ -38,37 +39,37 @@ class MainContent extends Component {
 		};
 
 		this.startMoveMainContent = false;
+		this.mainAction = MainContentAction.Move;
 		this.lastMouseX = 0;
 		this.lastMouseY = 0;
 	}
 
 	windowKeyDownHandler = e => {
-		
 		// delete
-		if(event.keyCode == 46) {
-			let {shapeVos, selectedShapeVos, lineVos } = this.state;
-			if(selectedShapeVos != null) {
-
-				selectedShapeVos.forEach(shapeVo => {
+		if (event.keyCode == 46) {
+			let { shapeVos, selectedShapeVoArr, lineVos } = this.state;
+			if (selectedShapeVoArr != null) {
+				selectedShapeVoArr.forEach(shapeVo => {
 					if (shapeVos.hasOwnProperty(shapeVo.id)) {
 						delete shapeVos[shapeVo.id];
 
 						for (const lId in lineVos) {
 							const lineVo = lineVos[lId];
-							if(lineVo.fromNode.id == shapeVo.id || lineVo.toNode.id == shapeVo.id) 
-							{
+							if (
+								lineVo.fromNode.id == shapeVo.id ||
+								lineVo.toNode.id == shapeVo.id
+							) {
 								delete lineVos[lId];
 							}
 						}
 					}
 				});
 
-				selectedShapeVos = []; //
-				this.setState({shapeVos, lineVos, selectedShapeVos});
+				selectedShapeVoArr = []; //
+				this.setState({ shapeVos, lineVos, selectedShapeVoArr });
 			}
 		}
 	};
-
 
 	windowMouseUpHandler = e => {
 		this.startMoveMainContent = false;
@@ -89,10 +90,27 @@ class MainContent extends Component {
 
 	windowMouseMoveHandler = e => {
 		let { isLock } = this.props;
-		if (!isLock && this.startMoveMainContent) {
+		if (
+			!isLock &&
+			this.startMoveMainContent &&
+			this.mainAction == MainContentAction.Move
+		) {
 			this.doMainContentMouseMoveHandler(e);
-			return;
+		} else if (this.mainAction == MainContentAction.Edit) {
+			this.mainContentEditHandler(e);
 		}
+	};
+
+	mainContentEditHandler = e => {
+		let currMouseX = e.clientX;
+		let currMouseY = e.clientY;
+
+		let deltaX = currMouseX - this.lastMouseX;
+		let deltaY = currMouseY - this.lastMouseY;
+
+		
+		this.lastMouseX = e.clientX;
+		this.lastMouseY = e.clientY;
 	};
 
 	doMainContentMouseMoveHandler = e => {
@@ -134,8 +152,6 @@ class MainContent extends Component {
 
 	mainClickHandler = e => {
 		let { scaleRatio, mainContentLeft } = this.state;
-		console.log(scaleRatio, mainContentLeft);
-		console.log(e.target.getBoundingClientRect());
 		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) {
 			// 重置
 			// this.setState({selectedShapeVo: null})
@@ -239,7 +255,7 @@ class MainContent extends Component {
 	};
 
 	dealCreateShapeVo = (selKey, top, left) => {
-		let { shapeVos, selectedShapeVos } = this.state;
+		let { shapeVos, selectedShapeVoArr } = this.state;
 
 		let shapeVo = null;
 		switch (selKey) {
@@ -265,8 +281,8 @@ class MainContent extends Component {
 			shapeVo.y = top;
 
 			shapeVos[shapeVo.id] = shapeVo;
-			selectedShapeVos.push(shapeVo);
-			this.setState({ shapeVos, selectedShapeVos });
+			selectedShapeVoArr.push(shapeVo);
+			this.setState({ shapeVos, selectedShapeVoArr });
 		}
 	};
 
@@ -287,6 +303,7 @@ class MainContent extends Component {
 	svgChangeActionHandler = (isAction, shapeVo, isLock) => {
 		if (isLock) return;
 
+		
 		if (isAction) {
 			//	this.setState({selectedShapeVo: shapeVo})	;
 			this.changeSelectedShapeOrder(shapeVo);
@@ -297,39 +314,37 @@ class MainContent extends Component {
 	};
 
 	changeSelectedShapeOrder = shapeVo => {
-		let { selectedShapeVos } = this.state;
+		let { selectedShapeVoArr } = this.state;
 		let removeIndex = -1;
-		for (let i = 0; i < selectedShapeVos.length; i++) {
-			if (shapeVo.id == selectedShapeVos[i].id) {
+		for (let i = 0; i < selectedShapeVoArr.length; i++) {
+			if (shapeVo.id == selectedShapeVoArr[i].id) {
 				// 删除
 				removeIndex = i;
 			}
 		}
 		if (removeIndex != -1) {
-			selectedShapeVos.splice(removeIndex, 1);
+			selectedShapeVoArr.splice(removeIndex, 1);
 		}
 
-		selectedShapeVos.push(shapeVo);
-		this.setState({ selectedShapeVos });
+		selectedShapeVoArr.push(shapeVo);
+		
+		this.setState({ selectedShapeVoArr });
 	};
 
 	removeSelectedShape = shapeVo => {
-		let { selectedShapeVos } = this.state;
+		let { selectedShapeVoArr } = this.state;
 		let removeIndex = -1;
-		for (let i = 0; i < selectedShapeVos.length; i++) {
-			if (shapeVo.id == selectedShapeVos[i].id) {
+		for (let i = 0; i < selectedShapeVoArr.length; i++) {
+			if (shapeVo.id == selectedShapeVoArr[i].id) {
 				// 删除
 				removeIndex = i;
 			}
 		}
 		if (removeIndex != -1) {
-			selectedShapeVos.splice(removeIndex, 1);
+			selectedShapeVoArr.splice(removeIndex, 1);
 		}
-		this.setState({ selectedShapeVos });
+		this.setState({ selectedShapeVoArr });
 	};
-
-	renderSelectedShapeAttribute = () => {};
-
 	createShapeByVo = shapeVo => {
 		let { x, y } = shapeVo;
 		let { isLock, selType } = this.props;
@@ -552,25 +567,25 @@ class MainContent extends Component {
 		return lineVos;
 	};
 
-	componentWillMount(){
-		window.addEventListener("mouseup",this.windowMouseUpHandler);
-		window.addEventListener("mousemove",this.windowMouseMoveHandler);
-		window.addEventListener("mousedown",this.windowMouseDownHandler);
-		window.addEventListener("keydown",this.windowKeyDownHandler);
+	componentWillMount() {
+		window.addEventListener("mouseup", this.windowMouseUpHandler);
+		window.addEventListener("mousemove", this.windowMouseMoveHandler);
+		window.addEventListener("mousedown", this.windowMouseDownHandler);
+		window.addEventListener("keydown", this.windowKeyDownHandler);
 	}
 
-	componentWillUnmount(){
-		window.removeEventListener("mouseup",this.windowMouseUpHandler);
-		window.removeEventListener("mousemove",this.windowMouseMoveHandler);
-		window.removeEventListener("mousedown",this.windowMouseDownHandler);
-		window.removeEventListener("keydown",this.windowKeyDownHandler);
+	componentWillUnmount() {
+		window.removeEventListener("mouseup", this.windowMouseUpHandler);
+		window.removeEventListener("mousemove", this.windowMouseMoveHandler);
+		window.removeEventListener("mousedown", this.windowMouseDownHandler);
+		window.removeEventListener("keydown", this.windowKeyDownHandler);
 	}
 
 	componentDidMount() {
 		let mainContent = ReactDOM.findDOMNode(this.refs.mainContent);
 		new ResizeSensor(mainContent, () => {
 			let mW = mainContent.getBoundingClientRect().width;
-			let mH = mainContent.getBoundingClientRect().width;
+			let mH = mainContent.getBoundingClientRect().height;
 			console.log("mainContent resize", mW, mH);
 			this.setState({ mainContentWidth: mW, mainContentHeight: mH });
 		});
@@ -600,10 +615,18 @@ class MainContent extends Component {
 		this.setState({ mainContentLeft, mainContentTop });
 	};
 
+	mainToolHomeClickHandler = () => {
+		this.setState({
+			mainContentLeft: 0,
+			mainContentTop: 0,
+			scaleRatio: 1
+		});
+	};
+
 	render() {
 		let nodes = this.renderNodes();
 		let {
-			selectedShapeVos,
+			selectedShapeVoArr,
 			shapeVos,
 			scaleRatio,
 			mainContentLeft,
@@ -611,9 +634,11 @@ class MainContent extends Component {
 			mainContentWidth,
 			mainContentHeight
 		} = this.state;
+
+		// 获取最后一个选中图形对象，给属性窗口
 		let selectedShapeVo =
-			selectedShapeVos.length > 0 &&
-			selectedShapeVos[selectedShapeVos.length - 1];
+			selectedShapeVoArr.length > 0 &&
+			selectedShapeVoArr[selectedShapeVoArr.length - 1];
 
 		//console.log(	{transform: `scale(${scaleRatio})`});
 		return (
@@ -666,11 +691,15 @@ class MainContent extends Component {
 							scaleRatio={scaleRatio}
 							onViewPortMove={this.viewPortMoveHandler}
 						/>
-						<div className={style.mainToolsContainer}>
-							<Icon type="home" style={{ fontSize: 24, color: '#d81e06' }}/>
-							<Icon type="edit" style={{ fontSize: 24, color: '#d81e06', paddingLeft: '5px' }}/>
-							<Icon type="edit" style={{ fontSize: 24, color: '#d81e06', paddingLeft: '5px' }}/>
-						</div>
+						<MainTool
+							onHomeClick={this.mainToolHomeClickHandler}
+							onEditClick={() => {
+								this.mainAction = MainContentAction.Edit;
+							}}
+							onMoveClick={() => {
+								this.mainAction = MainContentAction.Move;
+							}}
+						/>
 					</Content>
 					<Sider width={200} theme="dark">
 						<Collapse
