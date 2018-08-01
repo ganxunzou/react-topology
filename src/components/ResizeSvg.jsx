@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import injectStyle from "./injectCss";
-import { SelType } from "../constant";
+import { SelType, ShapePadding, ShapeBorder } from "../constant";
 
 let ActionType = {
 	None: 0,
@@ -31,8 +31,8 @@ class ResizeSvg extends Component {
 		left = parseInt(left);
 
 		this.state = {
-			padding: 8, // padding
-			border:8,
+			padding: ShapePadding, // padding
+			border: ShapeBorder,
 			style: {
 				left: left || 0,
 				top: top || 0,
@@ -50,8 +50,7 @@ class ResizeSvg extends Component {
 
 		this.lastMouseX = 0;
 		this.lastMouseY = 0;
-		window.addEventListener("mouseup", this.windowMouseUpHandler.bind(this));
-		window.addEventListener("mousemove", this.windowMouseMoveHandler.bind(this));
+	
 
 		// this.shapeVo = props.shapeVo;
 	}
@@ -72,13 +71,12 @@ class ResizeSvg extends Component {
 		}
 	}
 	
-	windowMouseUpHandler(e) {
+	windowMouseUpHandler=(e)=> {
 		this.currentAction = ActionType.None;
-
 		this.setState({deafultSvgContainerStyle: 'resize-svg-svg-container-dynamic'});
 	}
 
-	windowMouseMoveHandler(e) {
+	windowMouseMoveHandler=(e)=> {
 		if (e.target == ReactDOM.findDOMNode(this.refs.moveRect)) {
 			this.setState({deafultSvgContainerStyle: 'resize-svg-svg-container'});
 		}
@@ -224,13 +222,22 @@ class ResizeSvg extends Component {
 		let { onSvgChangeAction } = this.props;
 		onSvgChangeAction && onSvgChangeAction(!isAction, shapeVo, isLock);
 	}
-	componentWillUnmount() {
-		if(window) {
-			window.removeEventListener("mouseup", this.windowMouseUpHandler.bind(this));
-			window.removeEventListener("mousemove", this.windowMouseMoveHandler.bind(this));
-		}
+
+	componentWillMount(){
+
+		// TODO: 
+		// 不能用bind绑定this对象，因为bind将会创建一个新的函数，导致卸载的时候不能移除事件。
+		// ERROR 写法: window.addEventListener("mouseup", this.windowMouseUpHandler.bind(this), false);
+		
+		window.addEventListener("mouseup", this.windowMouseUpHandler, false);
+		window.addEventListener("mousemove", this.windowMouseMoveHandler, false);
 	}
-	
+
+	componentWillUnmount() {
+		window.removeEventListener("mouseup", this.windowMouseUpHandler, false);
+		window.removeEventListener("mousemove", this.windowMouseMoveHandler, false);
+
+	}
 
 	render() {
 		let { padding, border, style, isAction, deafultSvgContainerStyle } = this.state;

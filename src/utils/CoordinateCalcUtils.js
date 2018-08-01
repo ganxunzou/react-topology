@@ -1,8 +1,9 @@
 import {LineType} from '../constant';
 // 后续优化
-const padding = 8;
-const border = 8;
 
+import { ShapePadding, ShapeBorder, ShapeMinSpacing } from "../constant";
+
+let shapeBp = ShapeBorder + ShapePadding;
 export default class CoordinateCalcUtils{
   static calcPointsByLineVo(lineVo){
     if(lineVo.lineType == LineType.Straight){
@@ -21,17 +22,17 @@ export default class CoordinateCalcUtils{
     // 直线总共有八种情况
     if(bInfo.tNodeX > (bInfo.fNodeX + bInfo.fNodeW) && bInfo.tNodeY < (bInfo.fNodeY + bInfo.fNodeH) && bInfo.tNodeY > bInfo.fNodeY) {
       // 1
-      let fX = bInfo.fNodeX + bInfo.fNodeW;
+      let fX = bInfo.fNodeX + bInfo.fNodeW + ShapeBorder;
       let fY = bInfo.fNodeY + bInfo.fNodeH / 2;
-      let tX = bInfo.tNodeX;
+      let tX = bInfo.tNodeX - ShapeBorder;
       let tY = bInfo.tNodeY + bInfo.tNodeH /2;
       return [fX, fY, tX, tY];
     } else if(bInfo.tNodeX > (bInfo.fNodeX + bInfo.fNodeW) && bInfo.tNodeY < bInfo.fNodeY){
       // 2
-      let fX = bInfo.fNodeX + bInfo.fNodeW;
+      let fX = bInfo.fNodeX + bInfo.fNodeW + ShapeBorder;
       let fY = bInfo.fNodeY + bInfo.fNodeH / 2;
       let tX = bInfo.tNodeX + bInfo.tNodeW /2;
-      let tY = bInfo.tNodeY + bInfo.tNodeH;
+      let tY = bInfo.tNodeY + bInfo.tNodeH + ShapeBorder;
       
       return [fX, fY, tX, tY];
     } else if(bInfo.tNodeX < (bInfo.fNodeX + bInfo.fNodeW) && bInfo.tNodeX > bInfo.fNodeX && bInfo.tNodeY < bInfo.fNodeY) {
@@ -251,7 +252,7 @@ export default class CoordinateCalcUtils{
   }
 
   static baseInfo(lineVo){
-    let pb = padding + border;
+    let pb = ShapePadding + ShapeBorder;
     let fNodeX = lineVo.fromNode.x + pb;
     let fNodeY = lineVo.fromNode.y + pb;
     let fNodeW = lineVo.fromNode.w - pb*2;

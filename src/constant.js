@@ -31,3 +31,11 @@ export const Quadrant = {
 export const EagleEyeW = 150;
 // 鹰眼 高度
 export const EagleEyeH = 150;
+
+// 图形填充
+export const ShapePadding = 8;
+// 图形边框
+export const ShapeBorder = 8;
+
+// 两个图形之间相同坐标间距，例如：Shape1.x - Shape2.x > ShapeMinSpacing
+export const ShapeMinSpacing = 20;

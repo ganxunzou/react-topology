@@ -49,27 +49,27 @@ class PolylineSvg extends Component {
 							cx="4"
 							cy="4"
 							r="2"
-							style={{fill: `green`, stroke: 'green'}}
+							style={{fill: `#F76258`, stroke: 'none'}}
 						/>
 					</marker>
 					<marker
 						id="arrow"
 						markerWidth="10"
 						markerHeight="8"
-						refX="0"
+						refX="7"
 						refY="2"
 						orient="auto"
 					>
 						<path
 							d="M 0 0 8 2 0 4"
-							style={{fill: `green`, stroke: 'green'}}
+							style={{fill: `#F76258`, stroke: 'none'}}
 						/>
 					</marker>
 				</defs>
 				<polyline
 					style={{ pointerEvents: "auto" }}
 					points={pts}
-					style={{ fill: "none", stroke: "green", strokeWidth: 1 , markerStart: "url(#circle)", markerEnd: "url(#arrow)"}}
+					style={{ fill: "none", stroke: "#F76258", strokeWidth: 2 , markerStart: "url(#circle)", markerEnd: "url(#arrow)"}}
 				/>
 			</svg>
 		);

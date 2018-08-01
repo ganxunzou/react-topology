@@ -34,26 +34,41 @@ class MainContent extends Component {
 			mainContentLeft: 0,
 			mainContentTop: 0,
 			mainContentWidth: 0,
-			mainContentHeight: 0, 
+			mainContentHeight: 0
 		};
 
 		this.startMoveMainContent = false;
 		this.lastMouseX = 0;
 		this.lastMouseY = 0;
-
-		window.addEventListener(
-			"mouseup",
-			this.windowMouseUpHandler.bind(this)
-		);
-		window.addEventListener(
-			"mousemove",
-			this.windowMouseMoveHandler.bind(this)
-		);
-		window.addEventListener(
-			"mousedown",
-			this.windowMouseDownHandler.bind(this)
-		);
 	}
+
+	windowKeyDownHandler = e => {
+		
+		// delete
+		if(event.keyCode == 46) {
+			let {shapeVos, selectedShapeVos, lineVos } = this.state;
+			if(selectedShapeVos != null) {
+
+				selectedShapeVos.forEach(shapeVo => {
+					if (shapeVos.hasOwnProperty(shapeVo.id)) {
+						delete shapeVos[shapeVo.id];
+
+						for (const lId in lineVos) {
+							const lineVo = lineVos[lId];
+							if(lineVo.fromNode.id == shapeVo.id || lineVo.toNode.id == shapeVo.id) 
+							{
+								delete lineVos[lId];
+							}
+						}
+					}
+				});
+
+				selectedShapeVos = []; //
+				this.setState({shapeVos, lineVos, selectedShapeVos});
+			}
+		}
+	};
+
 
 	windowMouseUpHandler = e => {
 		this.startMoveMainContent = false;
@@ -537,14 +552,26 @@ class MainContent extends Component {
 		return lineVos;
 	};
 
-	componentDidMount() {
+	componentWillMount(){
+		window.addEventListener("mouseup",this.windowMouseUpHandler);
+		window.addEventListener("mousemove",this.windowMouseMoveHandler);
+		window.addEventListener("mousedown",this.windowMouseDownHandler);
+		window.addEventListener("keydown",this.windowKeyDownHandler);
+	}
 
+	componentWillUnmount(){
+		window.removeEventListener("mouseup",this.windowMouseUpHandler);
+		window.removeEventListener("mousemove",this.windowMouseMoveHandler);
+		window.removeEventListener("mousedown",this.windowMouseDownHandler);
+		window.removeEventListener("keydown",this.windowKeyDownHandler);
+	}
+
+	componentDidMount() {
 		let mainContent = ReactDOM.findDOMNode(this.refs.mainContent);
-		new ResizeSensor(mainContent, ()=>{
-		
+		new ResizeSensor(mainContent, () => {
 			let mW = mainContent.getBoundingClientRect().width;
-			let mH = mainContent.getBoundingClientRect().width;	
-			console.log('mainContent resize',mW, mH );
+			let mH = mainContent.getBoundingClientRect().width;
+			console.log("mainContent resize", mW, mH);
 			this.setState({ mainContentWidth: mW, mainContentHeight: mH });
 		});
 	}
@@ -565,13 +592,13 @@ class MainContent extends Component {
 		// let mW = mainContent.getBoundingClientRect().width;
 	};
 
-	viewPortMoveHandler=(deltaX, deltaY)=>{
+	viewPortMoveHandler = (deltaX, deltaY) => {
 		let { mainContentLeft, mainContentTop } = this.state;
 
 		mainContentLeft = mainContentLeft + deltaX;
 		mainContentTop = mainContentTop + deltaY;
 		this.setState({ mainContentLeft, mainContentTop });
-	}
+	};
 
 	render() {
 		let nodes = this.renderNodes();
@@ -590,7 +617,10 @@ class MainContent extends Component {
 
 		//console.log(	{transform: `scale(${scaleRatio})`});
 		return (
-			<Layout style={{ padding: "0 24px 24px" }}>
+			<Layout
+				style={{ padding: "0 24px 24px" }}
+				className={style.mainContainer}
+			>
 				<ButtonGroup style={{ padding: "10px 0" }}>
 					<Button type="primary" onClick={this.loadDataClickHandler}>
 						加载数据
