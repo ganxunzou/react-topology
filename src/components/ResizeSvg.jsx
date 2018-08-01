@@ -41,7 +41,6 @@ class ResizeSvg extends Component {
 				width: `${width || 100}px`,
 				height: `${height || 100}px`
 			},
-			isAction: true,
 			shapeVo: props.shapeVo,
 			deafultSvgContainerStyle: "resize-svg-svg-container-dynamic",
 		};
@@ -208,19 +207,20 @@ class ResizeSvg extends Component {
 
 	moveRectClickHandler = () => {
 		if (!this.isClickMove) {
-			let { isAction, shapeVo } = this.state;
-			this.setState({ isAction: !isAction });
-
-			this.onSvgChangeAction(isAction, shapeVo);
+			let { shapeVo } = this.state;
+			shapeVo.isAction = !shapeVo.isAction;
+			this.setState({ shapeVo });
+	
+			this.onSvgChangeAction(shapeVo);
 		}
 
 		this.isClickMove = false;
 	};
 
-	onSvgChangeAction=(isAction, shapeVo)=>{
+	onSvgChangeAction=(shapeVo)=>{
 		let {isLock} = this.props;
 		let { onSvgChangeAction } = this.props;
-		onSvgChangeAction && onSvgChangeAction(!isAction, shapeVo, isLock);
+		onSvgChangeAction && onSvgChangeAction(shapeVo, isLock);
 	}
 
 	componentWillMount(){
@@ -240,7 +240,7 @@ class ResizeSvg extends Component {
 	}
 
 	render() {
-		let { padding, border, style, isAction, deafultSvgContainerStyle } = this.state;
+		let { padding, border, style, deafultSvgContainerStyle } = this.state;
 		let { w, h } = style;
 		let {
 			width,
@@ -256,6 +256,8 @@ class ResizeSvg extends Component {
 			onSvgChangeAction,
 			...otherProps
 		} = this.props;
+
+		let {isAction} = shapeVo;
 
 		const childrenWithProps =
 			children &&

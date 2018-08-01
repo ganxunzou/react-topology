@@ -29,6 +29,7 @@ class ShapeVo extends BaseVo {
 			{ att: "text", dataType: "string" },
 		],
 		text = "文本",
+		isAction = true,
 	) {
 		super(id);
 		this.x = x;
@@ -38,6 +39,7 @@ class ShapeVo extends BaseVo {
 		this.text = text;
 		this.shapeType = shapeType;
 		this.iterationAtt = iterationAtt;
+		this.isAction = isAction;// 是否可以操作。此字段可以不保存数据库
 	}
 }
 

@@ -45,31 +45,48 @@ class MainContent extends Component {
 	}
 
 	windowKeyDownHandler = e => {
-		// delete
+		
 		if (event.keyCode == 46) {
-			let { shapeVos, selectedShapeVoArr, lineVos } = this.state;
-			if (selectedShapeVoArr != null) {
-				selectedShapeVoArr.forEach(shapeVo => {
-					if (shapeVos.hasOwnProperty(shapeVo.id)) {
-						delete shapeVos[shapeVo.id];
-
-						for (const lId in lineVos) {
-							const lineVo = lineVos[lId];
-							if (
-								lineVo.fromNode.id == shapeVo.id ||
-								lineVo.toNode.id == shapeVo.id
-							) {
-								delete lineVos[lId];
-							}
-						}
-					}
-				});
-
-				selectedShapeVoArr = []; //
-				this.setState({ shapeVos, lineVos, selectedShapeVoArr });
-			}
+			// delete key
+			this.deleteSelectedShape();	
+		} else if(event.keyCode == 27) {
+			// ESC key
+			this.changeAllShapeActionIsNone();
 		}
 	};
+
+	deleteSelectedShape=()=>{
+		let { shapeVos, selectedShapeVoArr, lineVos } = this.state;
+		if (selectedShapeVoArr != null) {
+			selectedShapeVoArr.forEach(shapeVo => {
+				if (shapeVos.hasOwnProperty(shapeVo.id)) {
+					delete shapeVos[shapeVo.id];
+
+					for (const lId in lineVos) {
+						const lineVo = lineVos[lId];
+						if (
+							lineVo.fromNode.id == shapeVo.id ||
+							lineVo.toNode.id == shapeVo.id
+						) {
+							delete lineVos[lId];
+						}
+					}
+				}
+			});
+
+			selectedShapeVoArr = []; //
+			this.setState({ shapeVos, lineVos, selectedShapeVoArr });
+		}
+	}
+
+	changeAllShapeActionIsNone=()=>{
+		if(this.mainAction == MainContentAction.Edit) {
+			let {shapeVos} = this.state;
+			for (const key in shapeVos) {
+				
+			}
+		}
+	}
 
 	windowMouseUpHandler = e => {
 		this.startMoveMainContent = false;
@@ -300,10 +317,10 @@ class MainContent extends Component {
 		this.forceUpdate();
 	};
 
-	svgChangeActionHandler = (isAction, shapeVo, isLock) => {
+	svgChangeActionHandler = (shapeVo, isLock) => {
 		if (isLock) return;
 
-		
+		let { isAction } = shapeVo;
 		if (isAction) {
 			//	this.setState({selectedShapeVo: shapeVo})	;
 			this.changeSelectedShapeOrder(shapeVo);
