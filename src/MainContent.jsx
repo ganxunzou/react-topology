@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Layout, Collapse, Breadcrumb, Button, Input } from "antd";
+import { Layout, Collapse, Breadcrumb, Button, Input, Icon } from "antd";
 const { Content, Sider } = Layout;
 const Panel = Collapse.Panel;
 const ButtonGroup = Button.Group;
@@ -666,6 +666,11 @@ class MainContent extends Component {
 							scaleRatio={scaleRatio}
 							onViewPortMove={this.viewPortMoveHandler}
 						/>
+						<div className={style.mainToolsContainer}>
+							<Icon type="home" style={{ fontSize: 24, color: '#d81e06' }}/>
+							<Icon type="edit" style={{ fontSize: 24, color: '#d81e06', paddingLeft: '5px' }}/>
+							<Icon type="edit" style={{ fontSize: 24, color: '#d81e06', paddingLeft: '5px' }}/>
+						</div>
 					</Content>
 					<Sider width={200} theme="dark">
 						<Collapse
