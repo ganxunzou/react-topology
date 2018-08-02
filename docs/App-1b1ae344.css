@@ -1,0 +1,58 @@
+._2rX75SMTVDIZkAp0t5e_tI {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+  -ms-user-select: none;
+  user-select: none;
+}
+._2mFuuswjwlZJtqjqVWnTbo {
+  pointer-events: none;
+}
+._3CHdnjvT_tqe6PWoooCJPu {
+  right: 10px;
+  top: 10px;
+  position: absolute;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: green;
+  overflow: hidden;
+}
+.cArsGQB66FuZyQJ5loXwu {
+  background: #000;
+  opacity: 0.3;
+  border: none;
+  cursor: move;
+}
+.PDp9O_u6voJadsZ8yLDl3 {
+  fill: #000;
+  fill-opacity: 0.6;
+  stroke: none;
+}
+._33mnPWdsa0e0rgw48XikmV {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  width: 100px;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+._1eeIYB8Nln5toONbewLcCP {
+  width: 150px;
+  height: 31px;
+  line-height: 31px;
+  margin: 15px 0 0 0;
+  float: left;
+  color: #FFF;
+  font-family: '\5FAE\8F6F\96C5\9ED1';
+  font-size: 20px;
+}
+
+/*# sourceMappingURL=App-1b1ae344.css.map*/
