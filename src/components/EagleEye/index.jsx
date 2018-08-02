@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import style from "./index.less";
 
-import { EagleEyeW, EagleEyeH } from "../../constant";
+import { EagleEyeW } from "../../constant";
+let EagleEyeH = 0;
 class EagleEye extends Component {
 	constructor(props) {
     super();
@@ -138,8 +139,15 @@ class EagleEye extends Component {
 			mainContentTop,
 			scaleRatio
 		} = props;
-    
+		
+		
+
 		let maxWidth = mainContentWidth * scaleRatio;
+		let maxHeight = mainContentHeight * scaleRatio;
+
+		// TODO: 按高宽比，计算鹰眼宽度。
+		EagleEyeH = EagleEyeW / (maxWidth / maxHeight);
+		
 		let eagleEyeRatio = mainContentWidth / maxWidth;
 		let viewPortW = EagleEyeW * eagleEyeRatio; // 鹰眼中视口宽度
 		let viewPortH = EagleEyeH * eagleEyeRatio; // 鹰眼中视口宽度

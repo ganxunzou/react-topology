@@ -24,7 +24,7 @@ class ResizeSvg extends Component {
 	constructor(props) {
 		super();
 
-		let { width, height, top, left } = props;
+		let { width, height, top, left, scaleRatio } = props;
 		width = parseInt(width);
 		height = parseInt(height);
 		top = parseInt(top);
@@ -43,6 +43,7 @@ class ResizeSvg extends Component {
 			},
 			shapeVo: props.shapeVo,
 			deafultSvgContainerStyle: "resize-svg-svg-container-dynamic",
+			scaleRatio: scaleRatio || 1,
 		};
 		this.currentAction = ActionType.None;
 		this.isClickMove = false; // 一次单击过程中是否有移动
@@ -66,7 +67,10 @@ class ResizeSvg extends Component {
 				height: `${h}px`
 			}
 			this.setState({shapeVo: nextProps.shapeVo, style});
-			
+		}
+
+		if(nextProps && 'scaleRatio' in nextProps) {
+			this.setState({scaleRatio: nextProps.scaleRatio});
 		}
 	}
 	
@@ -85,14 +89,18 @@ class ResizeSvg extends Component {
 
 		let deltaX = currMouseX - this.lastMouseX;
 		let deltaY = currMouseY - this.lastMouseY;
-		//console.log(currMouseX, deltaX, this.lastMouseX);
-
-		this.applyMouseMoveAction(deltaX, deltaY, e);
+		
+		this.applyMouseMoveAction(this.convertScaleRatioPx(deltaX), this.convertScaleRatioPx(deltaY), e);
 
 		// this.lastMouseX = event.pageX;
 		// this.lastMouseY = event.pageY;
 		this.lastMouseX = currMouseX;
 		this.lastMouseY = currMouseY;
+	}
+
+	convertScaleRatioPx=(px)=>{
+		let {scaleRatio} = this.state;
+		return px / scaleRatio;
 	}
 
 	mouseDownHandler(actionType) {
@@ -218,9 +226,8 @@ class ResizeSvg extends Component {
 	};
 
 	onSvgChangeAction=(shapeVo)=>{
-		let {isLock} = this.props;
 		let { onSvgChangeAction } = this.props;
-		onSvgChangeAction && onSvgChangeAction(shapeVo, isLock);
+		onSvgChangeAction && onSvgChangeAction(shapeVo);
 	}
 
 	componentWillMount(){

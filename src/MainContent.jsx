@@ -30,32 +30,39 @@ class MainContent extends Component {
 			shapeVos: {}, // key: uuid , value ShapeVo
 			lineVos: {}, // key: uuid ,value lineVo
 			tempLineVo: null,
-			selectedShapeVoArr: [], // 选中图形列表
+			selectedShapeVoArr: [], // 选中图形列表，为了排序
+			selectedShapeVos: {}, // 选中图形列表，key，value为了方便查找。
 			scaleRatio: 1, // 缩放比例,
 			mainContentLeft: 0,
 			mainContentTop: 0,
 			mainContentWidth: 0,
-			mainContentHeight: 0
+			mainContentHeight: 0,
+			startFrameSelectionRect: {
+				x: 0,
+				y: 0,
+				tX: 0,
+				tY: 0
+			}
 		};
 
-		this.startMoveMainContent = false;
+		this.startMoveMainContent = false; // 开始移动
+		this.startFrameSelection = false; // 开始框选
 		this.mainAction = MainContentAction.Move;
 		this.lastMouseX = 0;
 		this.lastMouseY = 0;
 	}
 
 	windowKeyDownHandler = e => {
-		
 		if (event.keyCode == 46) {
 			// delete key
-			this.deleteSelectedShape();	
-		} else if(event.keyCode == 27) {
+			this.deleteSelectedShape();
+		} else if (event.keyCode == 27) {
 			// ESC key
 			this.changeAllShapeActionIsNone();
 		}
 	};
 
-	deleteSelectedShape=()=>{
+	deleteSelectedShape = () => {
 		let { shapeVos, selectedShapeVoArr, lineVos } = this.state;
 		if (selectedShapeVoArr != null) {
 			selectedShapeVoArr.forEach(shapeVo => {
@@ -77,58 +84,137 @@ class MainContent extends Component {
 			selectedShapeVoArr = []; //
 			this.setState({ shapeVos, lineVos, selectedShapeVoArr });
 		}
-	}
+	};
 
-	changeAllShapeActionIsNone=()=>{
-		if(this.mainAction == MainContentAction.Edit) {
-			let {shapeVos} = this.state;
+	changeAllShapeActionIsNone = () => {
+		if (this.mainAction == MainContentAction.Edit) {
+			let { shapeVos } = this.state;
 			for (const key in shapeVos) {
-				
+				shapeVos[key].isAction = false;
 			}
+
+			this.setState({
+				shapeVos,
+				selectedShapeVo: {},
+				selectedShapeVoArr: []
+			});
 		}
-	}
+	};
 
 	windowMouseUpHandler = e => {
 		this.startMoveMainContent = false;
+		this.startFrameSelection = false;
+		this.setState({
+			startFrameSelectionRect: { x: 0, y: 0, tX: 0, tY: 0 }
+		});
 	};
 
 	windowMouseDownHandler = e => {
 		let { isLock } = this.props;
+
 		if (
 			!isLock &&
 			ReactDOM.findDOMNode(this.refs.mainContent) == e.target
 		) {
-			this.lastMouseX = e.clientX;
-			this.lastMouseY = e.clientY;
-			this.startMoveMainContent = true;
-			return;
+			if (this.mainAction == MainContentAction.Edit) {
+				this.lastMouseX = e.offsetX;
+				this.lastMouseY = e.offsetY;
+				this.startFrameSelection = true;
+			} else if (this.mainAction == MainContentAction.Move) {
+				this.lastMouseX = e.clientX;
+				this.lastMouseY = e.clientY;
+				this.startMoveMainContent = true;
+			}
 		}
 	};
 
 	windowMouseMoveHandler = e => {
-		let { isLock } = this.props;
+		// let { isLock } = this.props;
 		if (
-			!isLock &&
 			this.startMoveMainContent &&
 			this.mainAction == MainContentAction.Move
 		) {
 			this.doMainContentMouseMoveHandler(e);
-		} else if (this.mainAction == MainContentAction.Edit) {
+		} else if (
+			this.startFrameSelection &&
+			this.mainAction == MainContentAction.Edit
+		) {
 			this.mainContentEditHandler(e);
 		}
 	};
 
 	mainContentEditHandler = e => {
-		let currMouseX = e.clientX;
-		let currMouseY = e.clientY;
+		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) return;
+
+		let { shapeVos, startFrameSelectionRect } = this.state;
+		let currMouseX = e.offsetX;
+		let currMouseY = e.offsetY;
 
 		let deltaX = currMouseX - this.lastMouseX;
 		let deltaY = currMouseY - this.lastMouseY;
 
-		
-		this.lastMouseX = e.clientX;
-		this.lastMouseY = e.clientY;
+		startFrameSelectionRect = {
+			x: this.lastMouseX,
+			y: this.lastMouseY,
+			tX: currMouseX,
+			tY: currMouseY
+		};
+
+		if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
+			var isChange = false;
+			for (const id in shapeVos) {
+				let shapeVo = shapeVos[id];
+				if (this.judgeShapeInFrameSelectionRec(startFrameSelectionRect,shapeVo))
+					if (!shapeVos[id].isAction) {
+						isChange = true;
+						shapeVos[id].isAction = true;
+					}
+			}
+			isChange && this.setState({ shapeVos });
+			// shapeVos.forEach(shapeVo => {
+			// 	// if(shapeVo.x > this.lastMouseX && shapeVo.y < )
+			// });
+		}
+
+		this.setState({ startFrameSelectionRect });
 	};
+
+	judgeShapeInFrameSelectionRec=(startFrameSelectionRect, shapeVo) => {
+		let {x, y, tX, tY} = startFrameSelectionRect;
+		console.log(	shapeVo.x > tX ,
+			shapeVo.y > tY ,
+			shapeVo.x + shapeVo.w < x ,
+			shapeVo.y + shapeVo.h < y);
+		if(x < tX) {
+			// 向右框选
+			if (
+				shapeVo.x > x &&
+				shapeVo.y > y &&
+				shapeVo.x + shapeVo.w < tX &&
+				shapeVo.y + shapeVo.h < tY
+			){
+				return true;
+			} else{
+				return false;
+			}
+		} else {
+			
+			// 向左框选
+			if (
+				shapeVo.x > tX &&
+				shapeVo.y > tY &&
+				shapeVo.x + shapeVo.w < x &&
+				shapeVo.y + shapeVo.h < y
+			){
+				return true;
+			} else{
+				return false;
+			}
+		}
+		
+	}
+
+
 
 	doMainContentMouseMoveHandler = e => {
 		let currMouseX = e.clientX;
@@ -168,21 +254,24 @@ class MainContent extends Component {
 	};
 
 	mainClickHandler = e => {
+		console.log(e.target == ReactDOM.findDOMNode(this.refs.mainContent));
 		let { scaleRatio, mainContentLeft } = this.state;
 		if (e.target != ReactDOM.findDOMNode(this.refs.mainContent)) {
-			// 重置
-			// this.setState({selectedShapeVo: null})
 			return;
 		}
 
 		let { selKey, isLock, selType } = this.props;
-		isLock &&
+		if (
+			isLock &&
+			selType == SelType.SHAPE &&
+			this.mainAction != MainContentAction.Edit
+		) {
 			this.createShape(
-				selType,
 				selKey,
 				e.nativeEvent.offsetY,
 				e.nativeEvent.offsetX
 			);
+		}
 	};
 
 	mainMouseDownHandler = e => {
@@ -264,15 +353,12 @@ class MainContent extends Component {
 		}
 	};
 
-	createShape = (selType, selKey, top, left) => {
-		if (selType == SelType.SHAPE) {
-			this.dealCreateShapeVo(selKey, top, left);
-		} else if (selType == SelType.LINE) {
-		}
+	createShape = (selKey, top, left) => {
+		this.dealCreateShapeVo(selKey, top, left);
 	};
 
 	dealCreateShapeVo = (selKey, top, left) => {
-		let { shapeVos, selectedShapeVoArr } = this.state;
+		let { shapeVos } = this.state;
 
 		let shapeVo = null;
 		switch (selKey) {
@@ -298,9 +384,24 @@ class MainContent extends Component {
 			shapeVo.y = top;
 
 			shapeVos[shapeVo.id] = shapeVo;
-			selectedShapeVoArr.push(shapeVo);
-			this.setState({ shapeVos, selectedShapeVoArr });
+			this.setState({ shapeVos });
+
+			this.addSelectedShape(shapeVo);
 		}
+	};
+
+	// 添加一个选中图形
+	addSelectedShape = shapeVo => {
+		//
+		shapeVo.isAction = true;
+
+		let { selectedShapeVoArr, selectedShapeVos } = this.state;
+		if (selectedShapeVos[shapeVo.id]) return;
+
+		selectedShapeVoArr.push(shapeVo);
+		selectedShapeVos[shapeVo.id] = shapeVo;
+
+		this.setState({ selectedShapeVos, selectedShapeVoArr });
 	};
 
 	renderShape = () => {
@@ -317,14 +418,16 @@ class MainContent extends Component {
 		this.forceUpdate();
 	};
 
-	svgChangeActionHandler = (shapeVo, isLock) => {
-		if (isLock) return;
+	svgChangeActionHandler = shapeVo => {
+		let { isLock, selType } = this.props;
+		if (isLock && selType == SelType.LINE) return;
 
 		let { isAction } = shapeVo;
 		if (isAction) {
 			//	this.setState({selectedShapeVo: shapeVo})	;
 			this.changeSelectedShapeOrder(shapeVo);
 		} else {
+			console.log("removeSelectedShape");
 			this.removeSelectedShape(shapeVo);
 			// this.setState({selectedShapeVo: null})
 		}
@@ -344,7 +447,7 @@ class MainContent extends Component {
 		}
 
 		selectedShapeVoArr.push(shapeVo);
-		
+
 		this.setState({ selectedShapeVoArr });
 	};
 
@@ -363,6 +466,7 @@ class MainContent extends Component {
 		this.setState({ selectedShapeVoArr });
 	};
 	createShapeByVo = shapeVo => {
+		let {scaleRatio} = this.state;
 		let { x, y } = shapeVo;
 		let { isLock, selType } = this.props;
 		switch (shapeVo.shapeType) {
@@ -381,6 +485,7 @@ class MainContent extends Component {
 						shapeVo={shapeVo}
 						isLock={isLock}
 						selType={selType}
+						scaleRatio={scaleRatio}
 						onSvgMouseMove={this.svgMouseMoveHandler}
 						onSvgChangeAction={this.svgChangeActionHandler}
 					/>
@@ -640,6 +745,24 @@ class MainContent extends Component {
 		});
 	};
 
+	convertScalePx = px => {
+		let { scaleRatio } = this.state;
+		// 1px = px * scaleRatio
+		return px;
+	};
+
+	getFrameSelectionData = () => {
+		let { startFrameSelectionRect } = this.state;
+		let d = `M ${startFrameSelectionRect.x} ${startFrameSelectionRect.y} 
+		H ${startFrameSelectionRect.tX} 
+		V ${startFrameSelectionRect.tY}
+		H ${startFrameSelectionRect.x}
+		V ${startFrameSelectionRect.y}`;
+
+		//console.log(d);
+		return d;
+	};
+
 	render() {
 		let nodes = this.renderNodes();
 		let {
@@ -656,6 +779,8 @@ class MainContent extends Component {
 		let selectedShapeVo =
 			selectedShapeVoArr.length > 0 &&
 			selectedShapeVoArr[selectedShapeVoArr.length - 1];
+
+		let frameSelectionData = this.getFrameSelectionData();
 
 		//console.log(	{transform: `scale(${scaleRatio})`});
 		return (
@@ -698,6 +823,28 @@ class MainContent extends Component {
 							onWheel={this.mainWheelHandler}
 						>
 							{nodes}
+
+							<svg
+								style={{
+									position: "absolute",
+									width: "100%",
+									height: "100%",
+									pointerEvents: "none",
+									display: this.startFrameSelection
+										? ""
+										: "none"
+								}}
+							>
+								<path
+									d={frameSelectionData}
+									style={{
+										fill: "none",
+										stroke: "red",
+										strokeDasharray: "5.5",
+										strokeWidth: 1
+									}}
+								/>
+							</svg>
 						</div>
 						<EagleEye
 							shapeVos={shapeVos}
@@ -712,9 +859,11 @@ class MainContent extends Component {
 							onHomeClick={this.mainToolHomeClickHandler}
 							onEditClick={() => {
 								this.mainAction = MainContentAction.Edit;
+								this.props.onChangeLock(false);
 							}}
 							onMoveClick={() => {
 								this.mainAction = MainContentAction.Move;
+								this.props.onChangeLock(false);
 							}}
 						/>
 					</Content>

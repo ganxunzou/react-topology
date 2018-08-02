@@ -103,6 +103,7 @@ export default class App extends React.Component {
 							selKey={selKey}
 							selType={selType}
 							isLock={isLock}
+							onChangeLock={(isLock)=>{this.setState({isLock})}}
 						>
 						</MainContent>
 				</Layout>
